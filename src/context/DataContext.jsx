@@ -50,10 +50,49 @@ export function DataProvider({ children }) {
     await loadAll()
   }
 
+  const compressImage = (file, maxW = 800, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      const url = URL.createObjectURL(file)
+      img.onload = () => {
+        URL.revokeObjectURL(url)
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+        if (width > maxW) { height *= maxW / width; width = maxW }
+        canvas.width = width; canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+        canvas.toBlob(blob => {
+          if (blob) resolve(blob); else reject(new Error('Compression failed'))
+        }, file.type || 'image/jpeg', quality)
+      }
+      img.onerror = () => reject(new Error('Failed to load image for compression'))
+      img.src = url
+    })
+  }
+
   const uploadImage = async (file, path) => {
-    const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`)
-    await uploadBytes(storageRef, file)
-    return getDownloadURL(storageRef)
+    try {
+      const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`)
+      await uploadBytes(storageRef, file)
+      return await getDownloadURL(storageRef)
+    } catch (err) {
+      const maxSize = 700 * 1024
+      let processedFile = file
+      if (file.size > maxSize) {
+        const compressed = await compressImage(file, 700, 0.6)
+        if (compressed.size > maxSize) {
+          throw new Error('Image is too large even after compression. Please use a smaller image (under 700KB after compression).')
+        }
+        processedFile = compressed
+      }
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result)
+        reader.onerror = () => reject(new Error('Failed to read file as base64'))
+        reader.readAsDataURL(processedFile)
+      })
+    }
   }
 
   return (

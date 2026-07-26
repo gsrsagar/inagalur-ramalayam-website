@@ -73,10 +73,15 @@ export default function Navbar() {
             ))}
           </div>
 
-          <Link to="/admin" className="btn-primary nav-donate-btn">
+          <button 
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('open-donate-modal'))}
+            className="btn-primary nav-donate-btn"
+            style={{ cursor: 'pointer', border: 'none' }}
+          >
             <span>❤️</span>
             <span>{t('btn_donate')}</span>
-          </Link>
+          </button>
         </div>
       </div>
     </motion.header>
