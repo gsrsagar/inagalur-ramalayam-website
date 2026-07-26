@@ -38,7 +38,7 @@ export default function Navbar() {
     >
       <div className="navbar-container">
         <Link to="/" className="brand-logo">
-          <img src="/assets/temple_hero_deity.png" alt="" className="brand-symbol" />
+          <img src="/assets/temple_brand_logo.png" alt="" className="brand-symbol" />
           <div className="brand-text">
             <span className="brand-title">{t('brand_title')}</span>
             <span className="brand-subtitle">{t('brand_subtitle')}</span>
