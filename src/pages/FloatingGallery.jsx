@@ -6,12 +6,18 @@ import Slideshow from '../components/Slideshow'
 import { useLightbox } from '../components/Lightbox'
 
 const defaultGalleryItems = [
-  { id: 'm1', type: 'photo', category: 'sanctum', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
-  { id: 'm2', type: 'video', category: 'sevas', title: 'Virtual Darshan & Suprabhata Seva', desc: 'Morning Abhishekam & Chanting Video', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/temple_reconstruction.png' },
+  { id: 'rec1', type: 'photo', category: 'sanctum', title: 'Temple Grand Re-construction & Puna Prathistha 1', desc: 'Ancient Granite Architecture & Consecration', url: '/assets/temple_reconstruction1.jpeg' },
+  { id: 'rec2', type: 'photo', category: 'sanctum', title: 'Temple Grand Re-construction 2', desc: 'Sanctum Elevation & Traditional Stone Craftsmanship', url: '/assets/temple_reconstruction2.jpeg' },
   { id: 'm3', type: 'photo', category: 'sanctum', title: 'The 2024 Reconstruction Gopuram', desc: 'Granite Architecture & Illuminations', url: '/assets/temple_reconstruction.png' },
+  { id: 'm1', type: 'photo', category: 'sanctum', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
+  { id: 'p1', type: 'photo', category: 'sanctum', title: 'Festive Illumination & Deepotsavam', desc: 'Grand Temple Night Illumination & Deepalankarana', url: '/assets/page1.png' },
+  { id: 'p2', type: 'photo', category: 'sanctum', title: 'Sanctum Sanctorum Garbhalayam', desc: 'Krishnasila Divine Idols Altar', url: '/assets/page2.png' },
+  { id: 'p3', type: 'photo', category: 'sanctum', title: 'Sacred Tree Shrine & Sannidhi', desc: 'Historic Peepal Tree & Sanctum', url: '/assets/page3.png' },
+  { id: 'p4', type: 'photo', category: 'sanctum', title: 'Temple Courtyard & Mandapam', desc: 'Outer Pradakshina & Granite Pillars', url: '/assets/page4.png' },
   { id: 'm4', type: 'photo', category: 'service', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service', url: '/assets/founder_portrait.png' },
+  { id: 'm2', type: 'video', category: 'sevas', title: 'Virtual Darshan & Suprabhata Seva', desc: 'Morning Abhishekam & Chanting Video', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/temple_reconstruction.png' },
   { id: 'm5', type: 'video', category: 'service', title: 'Anna Daana Satram Prasadam Service', desc: 'Devotees partaking sacred prasadam meals', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/anna_daana.png' },
-  { id: 'm6', type: 'photo', category: 'literature', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.jpg' },
+  { id: 'm6', type: 'photo', category: 'literature', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.png' },
 ]
 
 function getYouTubeId(url) {
