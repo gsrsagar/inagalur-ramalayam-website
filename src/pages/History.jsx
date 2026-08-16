@@ -94,30 +94,6 @@ const reconstructionPhotos = [
     img: '/assets/temple_reconstruction.png',
     titleKey: 'photo_gopuram',
     descKey: 'timeline_2024_desc'
-  },
-  {
-    id: 'p1',
-    img: '/assets/page1.png',
-    titleKey: 'photo_festive',
-    descKey: 'timeline_2024_desc'
-  },
-  {
-    id: 'p2',
-    img: '/assets/page2.png',
-    titleKey: 'photo_sanctum',
-    descKey: 'timeline_2024_desc'
-  },
-  {
-    id: 'p3',
-    img: '/assets/page3.png',
-    titleKey: 'photo_tree',
-    descKey: 'timeline_2024_desc'
-  },
-  {
-    id: 'p4',
-    img: '/assets/page4.png',
-    titleKey: 'photo_courtyard',
-    descKey: 'timeline_2024_desc'
   }
 ]
 

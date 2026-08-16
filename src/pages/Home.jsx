@@ -91,8 +91,8 @@ export default function Home() {
             >
               <div className="hero-image-glow" />
               <img
-                src="/assets/founder_portrait.png"
-                alt={t('founder_name')}
+                src="/assets/temple_hero_deity.png"
+                alt="Sri Seetha Lakshmana Hanumath Sametha Ramachandra Swamy"
                 className="hero-image"
               />
               <div className="hero-year-badge">

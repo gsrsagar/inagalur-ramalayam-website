@@ -6,7 +6,6 @@ const defaultItems = [
   { id: 'rec2', type: 'photo', title: 'Temple Grand Re-construction 2', desc: 'Sanctum Elevation & Traditional Craftsmanship', url: '/assets/temple_reconstruction2.jpeg' },
   { id: 'm3', type: 'photo', title: 'The 2024 Reconstruction Gopuram', desc: 'Granite Architecture & Illuminations', url: '/assets/temple_reconstruction.png' },
   { id: 'm1', type: 'photo', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
-  { id: 'p1', type: 'photo', title: 'Festive Illumination & Deepotsavam', desc: 'Grand Temple Night Illumination', url: '/assets/page1.png' },
   { id: 'm4', type: 'photo', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service', url: '/assets/founder_portrait.png' },
   { id: 'm2', type: 'video', title: 'Virtual Darshan & Suprabhata Seva', desc: 'Morning Abhishekam & Chanting Video', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/temple_reconstruction.png' },
   { id: 'm5', type: 'video', title: 'Anna Daana Satram Prasadam Service', desc: 'Devotees partaking sacred prasadam meals', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/anna_daana.png' },
