@@ -13,15 +13,23 @@ export function ContentProvider({ children }) {
   const [pages, setPages] = useState({})
   const [translations, setTranslations] = useState(defaultTranslations)
   const [settings, setSettings] = useState({
-    email: 'sagarreddyguvvala.77@gmail.com',
-    phone: '+91 94411 91394 / +91 99087 15022',
+    email: 'kkpancharathnam@gmail.com',
+    phone: '+91 99087 15022 / +91 94411 91394',
     youtube: 'https://youtube.com',
     instagram: 'https://instagram.com',
-    bankName: 'State Bank of India',
-    bankAccount: '38251234567',
-    bankIfsc: 'SBIN0001234',
-    bankBranch: 'Kadiri Branch',
-    qrCodeUrl: '/assets/qr_code_placeholder.png'
+    accountType: 'CURRENT ACCOUNT',
+    accountName: 'Sri Seetha Lakshmana Hanumath sametha Ramachandra Swamy Temple Trust',
+    bankName: 'Andhra Pradesh Grameena Bank (Government Scheduled Bank)',
+    bankAccount: '563411000189871',
+    bankIfsc: 'UBIN0CG7999',
+    bankBranch: 'Obula Devara Cheruvu Branch',
+    trustName: 'Sri Seetha Lakshmana Hanumath sametha Ramachandra Swamy Temple Trust, Inagalore',
+    regNo: '8/2025 dated 11th June 2025',
+    pan: 'ABKTS6306C',
+    contactPerson: 'Sri Krishna Kumar Pancharathnam (President, Temple Trust)',
+    address: 'Inagalore Village, Obula Devara Cheruvu Mandal, Sri Sathya Sai District, Andhra Pradesh - 515591',
+    qrCodeUrl: '/assets/temple_pan_card.png',
+    panCardUrl: '/assets/temple_pan_card.png'
   })
   const [loading, setLoading] = useState(true)
 

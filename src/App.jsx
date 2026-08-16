@@ -14,6 +14,7 @@ import Members from './pages/Members'
 import Activities from './pages/Activities'
 import FloatingGallery from './pages/FloatingGallery'
 import History from './pages/History'
+import About from './pages/About'
 import Founder from './pages/Founder'
 import Services from './pages/Services'
 import Admin from './pages/Admin'
@@ -58,6 +59,7 @@ export default function App() {
                   <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
                   <Route path="/gallery" element={<PageTransition><FloatingGallery /></PageTransition>} />
                   <Route path="/history" element={<PageTransition><History /></PageTransition>} />
+                  <Route path="/about" element={<PageTransition><About /></PageTransition>} />
                   <Route path="/founder" element={<PageTransition><Founder /></PageTransition>} />
                   <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
                   <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
