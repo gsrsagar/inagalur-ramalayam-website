@@ -6,10 +6,10 @@ import { useLanguage } from '../context/LanguageContext'
 import AnimatedSection from '../components/AnimatedSection'
 
 const timeline = [
-  { year: 'timeline_1800_year', title: 'timeline_1800_title', desc: 'timeline_1800_desc', image: '/assets/temple_hero_deity.png', side: 'left' },
+  { year: 'timeline_1800_year', title: 'timeline_1800_title', desc: 'timeline_1800_desc', image: '/assets/temple_old_heritage.jpg', side: 'left' },
   { year: 'timeline_1900_year', title: 'timeline_1900_title', desc: 'timeline_1900_desc', image: '/assets/book_ramayanam.jpg', side: 'right' },
-  { year: 'timeline_2020_year', title: 'timeline_2020_title', desc: 'timeline_2020_desc', image: '/assets/temple_reconstruction.png', side: 'left' },
-  { year: 'timeline_2024_year', title: 'timeline_2024_title', desc: 'timeline_2024_desc', image: '/assets/anna_daana.png', side: 'right' },
+  { year: 'timeline_2020_year', title: 'timeline_2020_title', desc: 'timeline_2020_desc', image: '/assets/temple_old_entrance.jpg', side: 'left' },
+  { year: 'timeline_2024_year', title: 'timeline_2024_title', desc: 'timeline_2024_desc', image: '/assets/temple_inner_sanctum_pillar.jpg', side: 'right' },
 ]
 
 function FloatingHistoryGeometry() {

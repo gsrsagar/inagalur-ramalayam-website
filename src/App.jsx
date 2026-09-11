@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ContentProvider } from './context/ContentContext'
 import { DataProvider } from './context/DataContext'
 import { LanguageProvider } from './context/LanguageContext'
+import { AudioProvider } from './context/AudioContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -47,26 +48,28 @@ export default function App() {
       <ContentProvider>
         <DataProvider>
           <LanguageProvider>
-            <LightboxProvider>
-              <ParticleBackground />
-              <Navbar />
-              <AnimatePresence mode="wait">
-                <Routes location={location} key={location.pathname}>
-                  <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-                  <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
-                  <Route path="/members" element={<PageTransition><Members /></PageTransition>} />
-                  <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
-                  <Route path="/gallery" element={<PageTransition><FloatingGallery /></PageTransition>} />
-                  <Route path="/history" element={<PageTransition><History /></PageTransition>} />
-                  <Route path="/founder" element={<PageTransition><Founder /></PageTransition>} />
-                  <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
-                  <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
-                </Routes>
-              </AnimatePresence>
-              <Footer />
-              <AudioControl />
-              <DonateModal />
-            </LightboxProvider>
+            <AudioProvider>
+              <LightboxProvider>
+                <ParticleBackground />
+                <Navbar />
+                <AnimatePresence mode="wait">
+                  <Routes location={location} key={location.pathname}>
+                    <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+                    <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
+                    <Route path="/members" element={<PageTransition><Members /></PageTransition>} />
+                    <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
+                    <Route path="/gallery" element={<PageTransition><FloatingGallery /></PageTransition>} />
+                    <Route path="/history" element={<PageTransition><History /></PageTransition>} />
+                    <Route path="/founder" element={<PageTransition><Founder /></PageTransition>} />
+                    <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
+                    <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
+                  </Routes>
+                </AnimatePresence>
+                <Footer />
+                <AudioControl />
+                <DonateModal />
+              </LightboxProvider>
+            </AudioProvider>
           </LanguageProvider>
         </DataProvider>
       </ContentProvider>

@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useLightbox } from './Lightbox'
 
 const defaultItems = [
-  { id: 'm1', type: 'photo', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
-  { id: 'm2', type: 'video', title: 'Virtual Darshan & Suprabhata Seva', desc: 'Morning Abhishekam & Chanting Video', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/temple_reconstruction.png' },
-  { id: 'm3', type: 'photo', title: 'The 2024 Reconstruction Gopuram', desc: 'Granite Architecture & Illuminations', url: '/assets/temple_reconstruction.png' },
-  { id: 'm4', type: 'photo', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service', url: '/assets/founder_portrait.png' },
-  { id: 'm5', type: 'video', title: 'Anna Daana Satram Prasadam Service', desc: 'Devotees partaking sacred prasadam meals', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/anna_daana.png' },
-  { id: 'm6', type: 'photo', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.jpg' },
+  { id: 'm1', type: 'photo', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png', fit: 'contain' },
+  { id: 'm2', type: 'photo', title: 'New Temple Inner Sanctum & Altar', desc: 'Decorated Dhwajasthambham & Sanctum Sanctorum', url: '/assets/temple_inner_sanctum_pillar.jpg', fit: 'contain' },
+  { id: 'm3', type: 'photo', title: 'Original Ancient Temple & Sacred Tree', desc: 'Centuries-old Heritage Temple Structure', url: '/assets/temple_old_heritage.jpg', fit: 'contain' },
+  { id: 'm4', type: 'photo', title: 'Historical Temple Entrance & Mandapam', desc: 'Original Stone Threshold and Heritage Entrance', url: '/assets/temple_old_entrance.jpg', fit: 'contain' },
+  { id: 'm5', type: 'photo', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service & Spiritual Legacy', url: '/assets/founder_portrait.png', fit: 'contain', position: 'center top' },
+  { id: 'm6', type: 'photo', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.jpg', fit: 'contain' },
 ]
 
 function getYouTubeId(url) {
@@ -53,7 +53,33 @@ export default function Slideshow({ items: propItems }) {
                   <video src={item.url} muted loop playsInline preload="auto" />
                 )
               ) : (
-                <img src={item.url} alt={item.title} loading="lazy" />
+                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: '#0a0e14' }}>
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      backgroundImage: `url(${item.url})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      filter: 'blur(24px) brightness(0.35)',
+                      transform: 'scale(1.1)',
+                      zIndex: 0
+                    }} 
+                  />
+                  <img 
+                    src={item.url} 
+                    alt={item.title} 
+                    loading="lazy" 
+                    style={{
+                      position: 'relative',
+                      zIndex: 1,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: item.fit || 'contain',
+                      objectPosition: item.position || 'center',
+                    }}
+                  />
+                </div>
               )}
               <div className="slideshow-info-overlay">
                 <h4>{item.title}</h4>

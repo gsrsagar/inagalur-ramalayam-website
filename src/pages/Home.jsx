@@ -1,4 +1,5 @@
 import { useLanguage } from '../context/LanguageContext'
+import { useAudio } from '../context/AudioContext'
 import { motion } from 'framer-motion'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { Float } from '@react-three/drei'
@@ -18,6 +19,7 @@ function RamaBanamBg() {
 
 export default function Home() {
   const { t } = useLanguage()
+  const { playing, togglePlay, volume, setVolume } = useAudio()
 
   return (
     <section className="hero-section">
@@ -76,6 +78,61 @@ export default function Home() {
             <a href="/" className="btn-secondary" onClick={e => { e.preventDefault(); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }) }}>
               {t('btn_contact')}
             </a>
+          </motion.div>
+
+          {/* Home Devotional Audio Player */}
+          <motion.div
+            className="home-audio-player-card"
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <div className="audio-player-left">
+              <button
+                type="button"
+                className={`home-audio-play-btn ${playing ? 'is-playing' : ''}`}
+                onClick={togglePlay}
+                aria-label={playing ? 'Pause Sacred Chant' : 'Play Sacred Chant'}
+              >
+                {playing ? '⏸' : '▶'}
+              </button>
+              <div className="home-audio-meta">
+                <span className="home-audio-tag">🕉️ Sacred Chanting</span>
+                <h4 className="home-audio-title">Sri Raama Naama Sankeerthanam</h4>
+                <p className="home-audio-status">
+                  {playing ? '✨ Chanting playing in divine harmony' : 'Tap to play background temple chant'}
+                </p>
+              </div>
+            </div>
+
+            <div className="audio-player-right">
+              <div className={`audio-equalizer ${playing ? 'active' : ''}`}>
+                <span className="eq-bar eq-1"></span>
+                <span className="eq-bar eq-2"></span>
+                <span className="eq-bar eq-3"></span>
+                <span className="eq-bar eq-4"></span>
+                <span className="eq-bar eq-5"></span>
+              </div>
+              <div className="home-audio-vol-wrap">
+                <span 
+                  className="vol-icon" 
+                  onClick={() => setVolume(volume > 0 ? 0 : 0.6)}
+                  title={volume > 0 ? 'Mute' : 'Unmute'}
+                >
+                  {volume === 0 ? '🔇' : '🔊'}
+                </span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={volume}
+                  onChange={(e) => setVolume(parseFloat(e.target.value))}
+                  className="home-vol-slider"
+                  title="Volume"
+                />
+              </div>
+            </div>
           </motion.div>
         </div>
 

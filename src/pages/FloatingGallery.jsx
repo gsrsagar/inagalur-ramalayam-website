@@ -6,12 +6,12 @@ import Slideshow from '../components/Slideshow'
 import { useLightbox } from '../components/Lightbox'
 
 const defaultGalleryItems = [
-  { id: 'm1', type: 'photo', category: 'sanctum', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
-  { id: 'm2', type: 'video', category: 'sevas', title: 'Virtual Darshan & Suprabhata Seva', desc: 'Morning Abhishekam & Chanting Video', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/temple_reconstruction.png' },
-  { id: 'm3', type: 'photo', category: 'sanctum', title: 'The 2024 Reconstruction Gopuram', desc: 'Granite Architecture & Illuminations', url: '/assets/temple_reconstruction.png' },
-  { id: 'm4', type: 'photo', category: 'service', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service', url: '/assets/founder_portrait.png' },
-  { id: 'm5', type: 'video', category: 'service', title: 'Anna Daana Satram Prasadam Service', desc: 'Devotees partaking sacred prasadam meals', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/anna_daana.png' },
-  { id: 'm6', type: 'photo', category: 'literature', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.jpg' },
+  { id: 'm1', type: 'photo', category: 'sanctum', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
+  { id: 'm2', type: 'photo', category: 'sanctum', title: 'New Temple Inner Sanctum & Altar', desc: 'Decorated Dhwajasthambham & Sanctum Sanctorum', url: '/assets/temple_inner_sanctum_pillar.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center top' },
+  { id: 'm3', type: 'photo', category: 'heritage', title: 'Original Ancient Temple & Sacred Tree', desc: 'Centuries-old Heritage Temple Structure', url: '/assets/temple_old_heritage.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
+  { id: 'm4', type: 'photo', category: 'heritage', title: 'Historical Temple Entrance & Mandapam', desc: 'Original Stone Threshold and Heritage Entrance', url: '/assets/temple_old_entrance.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
+  { id: 'm5', type: 'photo', category: 'service', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service & Spiritual Legacy', url: '/assets/founder_portrait.png', fit: 'contain', position: 'center top', gridFit: 'cover', gridPosition: 'center 15%' },
+  { id: 'm6', type: 'photo', category: 'literature', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
 ]
 
 function getYouTubeId(url) {
@@ -29,7 +29,7 @@ export default function FloatingGallery() {
   const categories = [
     { id: 'all', label: 'All Expressions' },
     { id: 'sanctum', label: 'Sanctum & Deities' },
-    { id: 'sevas', label: 'Sevas & Aaradhana' },
+    { id: 'heritage', label: 'Old & New Temple' },
     { id: 'service', label: 'Anna Daana Service' },
     { id: 'literature', label: 'Sacred Literature' },
   ]
@@ -126,8 +126,18 @@ export default function FloatingGallery() {
                     style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
                     onClick={() => open(item)}
                   >
-                    <div className="crud-card-img-wrapper" style={{ height: '180px' }}>
-                      <img src={displayImg} alt={item.title} className="crud-card-img" />
+                    <div className="crud-card-img-wrapper" style={{ height: '200px', background: '#090d13', overflow: 'hidden' }}>
+                      <img 
+                        src={displayImg} 
+                        alt={item.title} 
+                        className="crud-card-img" 
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: item.gridFit || 'cover',
+                          objectPosition: item.gridPosition || 'center'
+                        }}
+                      />
                       <div className="crud-card-badge">
                         {isVideo ? '🎥 Video' : '🖼️ Photo'}
                       </div>
