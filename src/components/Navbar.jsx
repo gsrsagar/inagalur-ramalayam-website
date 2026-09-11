@@ -18,6 +18,7 @@ export default function Navbar() {
     { to: '/', label: t('nav_home') },
     { to: '/gallery', label: t('nav_gallery') },
     { to: '/history', label: t('nav_history') },
+    { to: '/about', label: t('nav_about') },
     { to: '/founder', label: t('nav_founder') },
     { to: '/services', label: t('nav_services') },
   ]

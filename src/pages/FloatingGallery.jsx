@@ -6,12 +6,14 @@ import Slideshow from '../components/Slideshow'
 import { useLightbox } from '../components/Lightbox'
 
 const defaultGalleryItems = [
-  { id: 'm1', type: 'photo', category: 'sanctum', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
-  { id: 'm2', type: 'photo', category: 'sanctum', title: 'New Temple Inner Sanctum & Altar', desc: 'Decorated Dhwajasthambham & Sanctum Sanctorum', url: '/assets/temple_inner_sanctum_pillar.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center top' },
-  { id: 'm3', type: 'photo', category: 'heritage', title: 'Original Ancient Temple & Sacred Tree', desc: 'Centuries-old Heritage Temple Structure', url: '/assets/temple_old_heritage.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
-  { id: 'm4', type: 'photo', category: 'heritage', title: 'Historical Temple Entrance & Mandapam', desc: 'Original Stone Threshold and Heritage Entrance', url: '/assets/temple_old_entrance.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
-  { id: 'm5', type: 'photo', category: 'service', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service & Spiritual Legacy', url: '/assets/founder_portrait.png', fit: 'contain', position: 'center top', gridFit: 'cover', gridPosition: 'center 15%' },
-  { id: 'm6', type: 'photo', category: 'literature', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.jpg', fit: 'contain', position: 'center', gridFit: 'cover', gridPosition: 'center' },
+  { id: 'rec1', type: 'photo', category: 'sanctum', title: 'Temple Grand Re-construction & Puna Prathistha 1', desc: 'Ancient Granite Architecture & Consecration', url: '/assets/temple_reconstruction1.jpeg' },
+  { id: 'rec2', type: 'photo', category: 'sanctum', title: 'Temple Grand Re-construction 2', desc: 'Sanctum Elevation & Traditional Stone Craftsmanship', url: '/assets/temple_reconstruction2.jpeg' },
+  { id: 'm3', type: 'photo', category: 'sanctum', title: 'The 2024 Reconstruction Gopuram', desc: 'Granite Architecture & Illuminations', url: '/assets/temple_reconstruction.png' },
+  { id: 'm1', type: 'photo', category: 'sanctum', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
+  { id: 'm4', type: 'photo', category: 'service', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service', url: '/assets/founder_portrait.png' },
+  { id: 'm2', type: 'video', category: 'sevas', title: 'Virtual Darshan & Suprabhata Seva', desc: 'Morning Abhishekam & Chanting Video', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/temple_reconstruction.png' },
+  { id: 'm5', type: 'video', category: 'service', title: 'Anna Daana Satram Prasadam Service', desc: 'Devotees partaking sacred prasadam meals', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/anna_daana.png' },
+  { id: 'm6', type: 'photo', category: 'literature', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.png' },
 ]
 
 function getYouTubeId(url) {
@@ -46,12 +48,12 @@ export default function FloatingGallery() {
         <p className="section-desc" style={{ textAlign: 'center', maxWidth: '680px', margin: '0 auto 2.5rem' }}>{t('floating_desc')}</p>
 
         {/* Gallery Control Bar */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          marginBottom: '2rem', 
-          flexWrap: 'wrap', 
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '2rem',
+          flexWrap: 'wrap',
           gap: '1rem',
           borderBottom: '1px solid var(--glass-border)',
           paddingBottom: '1.25rem'
@@ -73,16 +75,16 @@ export default function FloatingGallery() {
 
           {/* View Toggle Group */}
           <div className="toggle-btn-group">
-            <button 
-              type="button" 
-              onClick={() => setViewMode('slider')} 
+            <button
+              type="button"
+              onClick={() => setViewMode('slider')}
               className={`toggle-view-btn ${viewMode === 'slider' ? 'active' : ''}`}
             >
               🎭 Cinematic Slider
             </button>
-            <button 
-              type="button" 
-              onClick={() => setViewMode('grid')} 
+            <button
+              type="button"
+              onClick={() => setViewMode('grid')}
               className={`toggle-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
             >
               🧱 Grid View
@@ -114,7 +116,7 @@ export default function FloatingGallery() {
               {filteredItems.map(item => {
                 const isVideo = item.type === 'video'
                 const ytId = isVideo ? getYouTubeId(item.url) : null
-                const displayImg = isVideo 
+                const displayImg = isVideo
                   ? (item.thumb || `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`)
                   : item.url
 
@@ -127,10 +129,10 @@ export default function FloatingGallery() {
                     onClick={() => open(item)}
                   >
                     <div className="crud-card-img-wrapper" style={{ height: '200px', background: '#090d13', overflow: 'hidden' }}>
-                      <img 
-                        src={displayImg} 
-                        alt={item.title} 
-                        className="crud-card-img" 
+                      <img
+                        src={displayImg}
+                        alt={item.title}
+                        className="crud-card-img"
                         style={{
                           width: '100%',
                           height: '100%',
