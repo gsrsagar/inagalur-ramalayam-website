@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useLanguage } from '../context/LanguageContext'
-import { useLightbox } from '../components/Lightbox'
 import AnimatedSection from '../components/AnimatedSection'
 
 const sacredBooks = [
@@ -10,7 +10,7 @@ const sacredBooks = [
     genreKey: 'book1_genre',
     img: '/assets/book_ramayanam.png',
     actionType: 'youtube',
-    youtubeUrl: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC',
+    youtubeUrl: 'https://www.youtube.com/watch?v=wVGH-9Znwq4&list=PL4-zN5NLKyzwvbvtFOQYp7UjC62whcu',
     backDesc: 'A sacred illustrated poetic work meditating upon the holy name of Lord Sri Rama, replete with divine artwork, verses and spiritual devotion.'
   },
   {
@@ -19,7 +19,7 @@ const sacredBooks = [
     genreKey: 'book2_genre',
     img: '/assets/book_eeswara.png',
     actionType: 'youtube',
-    youtubeUrl: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC',
+    youtubeUrl: 'https://www.youtube.com/watch?v=MzO9IC-Sbwg&list=PL4-zN5NLKyzzXiTag01CJ2WpY0W1KIhK2',
     backDesc: 'An insightful philosophical and spiritual novel elaborating on devotion, omnipresence of the Divine, and pathways of spiritual surrender.'
   },
   {
@@ -27,7 +27,8 @@ const sacredBooks = [
     titleKey: 'book3_title',
     genreKey: 'book3_genre',
     img: '/assets/book_kalaabhanu.png',
-    actionType: 'pdf',
+    actionType: 'youtube',
+    youtubeUrl: 'https://www.youtube.com/watch?v=sIA3zIHy1YU&list=PL4-zN5NLKyzwk6U4kzrnQr1Ei-cTlsMUf',
     pdfUrl: '/assets/Kalaabhaanu-Vijayamu.pdf',
     archiveUrl: 'https://archive.org/details/in.ernet.dli.2015.331109',
     backDesc: 'A classical Telugu literary masterwork highlighting romantic folk narrative, moral virtues, and cultural brilliance.'
@@ -40,40 +41,154 @@ const classicalDramas = [
     icon: '🎭',
     titleKey: 'drama1_title',
     genreKey: 'drama1_genre',
-    desc: 'An exquisite classical play dramatizing the divine legend and heroic valour of Arjuna and Subhadra.'
+    desc: 'An exquisite classical play dramatizing the divine legend and heroic valour of Arjuna and Subhadra.',
+    shloka: 'శ్రీ కృష్ణ ద్వైపాయన ప్రణీత భారత కథాంశము • వీర రస ప్రధాన నాటక రాజము',
+    fullDesc: 'Subhadra Arjuneyam is an exquisite classical Yakshagana and theatrical drama composed with poetic mastery. It portrays the heroic journey of Arjuna, the divine guidance of Lord Sri Krishna, and the righteous celestial union with Subhadra. Rich in poetic meters (padyams), devotional ragas, and profound moral teachings.',
+    highlights: ['Heroic Valour of Vijaya (Arjuna)', 'Divine Leelas & Guidance of Lord Sri Krishna', 'Classical Telugu Verses & Dramatic Dialogue', 'Ideal Conjugal Devotion & Kshatriya Dharma']
   },
   {
     id: 'drama2',
     icon: '📜',
     titleKey: 'drama2_title',
     genreKey: 'drama2_genre',
-    desc: 'A comprehensive sacred chronicle documenting the inspirational lives and divine experiences of 24 great devotees.'
+    desc: 'A comprehensive sacred chronicle documenting the inspirational lives and divine experiences of 24 great devotees.',
+    shloka: 'భక్త రక్షణ తత్పరం పరమ పావనం • చతుర్వింశతి భక్త చరిత్ర వైభవం',
+    fullDesc: 'Bhaktha Vijayam chronicles the inspirational, miracle-filled life histories of 24 paramount saints and devotees across Bharatavarsha. It celebrates the unwavering devotion (Bhakti Yoga) of saints including Prahlada, Dhruva, Tukaram, Ramadasu, Meera Bai, Tyagaraja, Kabir, and Gouranga Mahaprabhu.',
+    highlights: ['Chronicles of 24 Paramount Devotees', 'Divine Miracles & Unshakable Faith', 'Path of Complete Self-Surrender (Saranagati)', 'Eternal Inspiration for Spiritual Seekers']
   },
   {
     id: 'drama3',
     icon: '🏛️',
     titleKey: 'drama3_title',
     genreKey: 'drama3_genre',
-    desc: 'The sacred history and puranic sanctity of the revered Hatakeswara Kshetra.'
+    desc: 'The sacred history and puranic sanctity of the revered Hatakeswara Kshetra.',
+    shloka: 'హాటకేశ్వర మహాక్షేత్ర స్థల పురాణ వైభవమ్ • పాపహరం పుణ్యప్రదం ముక్తిదాయకమ్',
+    fullDesc: 'Hatakeswara Sthala Puraanam details the sacred puranic history, divine linga consecration, holy teerthams, and spiritual importance of Hatakeswara Kshetra. Rendered in classical devotional prose and poetry, it illuminates the glory of Lord Shiva and eternal sanctity of the pilgrimage site.',
+    highlights: ['Puranic Origin of Hatakeswara Lingam', 'Sacred Teerthams & Holy Bathing Rituals', 'Remover of All Karmic Afflictions', 'Detailed Pilgrimage & Worship Guidelines']
   }
 ]
 
-const ashtottaraList = [
-  'ashtottaram_vishnu',
-  'ashtottaram_lakshmi',
-  'ashtottaram_dakshinamurthy',
-  'ashtottaram_surya',
-  'ashtottaram_ganga',
-  'ashtottaram_krishna',
-  'ashtottaram_anjaneya',
-  'ashtottaram_sri_raama'
+const ashtottaraData = [
+  {
+    id: 'ashtottaram_vishnu',
+    titleKey: 'ashtottaram_vishnu',
+    icon: '🪷',
+    deity: 'Lord Maha Vishnu',
+    mantra: 'ॐ నమో నారాయణాయ • Om Namo Narayanaya',
+    desc: '108 Divine Names and compound descriptive epithets (*Deergha Samaasa*) extolling the omnipresent Protector Lord Maha Vishnu, Granter of Moksha and Sustainer of the Cosmos.'
+  },
+  {
+    id: 'ashtottaram_lakshmi',
+    titleKey: 'ashtottaram_lakshmi',
+    icon: '🌸',
+    deity: 'Goddess Sri Maha Lakshmi',
+    mantra: 'ॐ శ్రీం మహాలక్ష్మ్యై నమః • Om Shreem Mahalakshmyai Namah',
+    desc: '108 Holy Names praising Goddess Mahalakshmi, bestower of Ashta Aishwarya (eightfold wealth), auspiciousness, wisdom, and spiritual abundance.'
+  },
+  {
+    id: 'ashtottaram_dakshinamurthy',
+    titleKey: 'ashtottaram_dakshinamurthy',
+    icon: '🧘',
+    deity: 'Lord Dakshinamurthy',
+    mantra: 'ॐ నమో భగవతే దక్షిణామూర్తయే • Om Namo Bhagavate Dakshinamurtaye',
+    desc: '108 Divine Names praising Lord Dakshinamurthy, the primordial Silent Guru seated beneath the banyan tree, dispelling the darkness of ignorance and bestowing Brahma Vidya.'
+  },
+  {
+    id: 'ashtottaram_surya',
+    titleKey: 'ashtottaram_surya',
+    icon: '☀️',
+    deity: 'Lord Surya Bhagavan',
+    mantra: 'ॐ సూర్యాయ నమః • ఆదిత్యాయ నమః • Om Suryaya Namah',
+    desc: '108 Sacred Names praising the radiant Sun God Surya Narayana, source of all universal energy, good health (Aarogyam), longevity, and intellectual brilliance.'
+  },
+  {
+    id: 'ashtottaram_ganga',
+    titleKey: 'ashtottaram_ganga',
+    icon: '🌊',
+    deity: 'Mother Ganga Bhavani',
+    mantra: 'ॐ గంగాయై నమః • భాగీరథ్యై నమః • Om Gangayai Namah',
+    desc: '108 Sacred Names in praise of the celestial river Goddess Ganga Bhavani, the purifier of all sins and sanctifier of the three worlds.'
+  },
+  {
+    id: 'ashtottaram_krishna',
+    titleKey: 'ashtottaram_krishna',
+    icon: '🦚',
+    deity: 'Lord Sri Krishna',
+    mantra: 'ॐ నమో భగవతే వాసుదేవాయ • Om Namo Bhagavate Vasudevaya',
+    desc: '108 Divine Names commemorating the blissful avatar of Lord Sri Krishna, the Supreme Preceptor of the Bhagavad Gita and protector of the virtuous.'
+  },
+  {
+    id: 'ashtottaram_anjaneya',
+    titleKey: 'ashtottaram_anjaneya',
+    icon: '🚩',
+    deity: 'Lord Anjaneya Swamy (Hanuman)',
+    mantra: 'ॐ శ్రీ హనుమతే నమః • Om Sri Hanumate Namah',
+    desc: '108 Holy Names worshipping Lord Hanuman, embodiment of courage, unyielding devotion, supreme intellect, and protector against all fears and negative energies.'
+  },
+  {
+    id: 'ashtottaram_sri_raama',
+    titleKey: 'ashtottaram_sri_raama',
+    icon: '🏹',
+    deity: 'Lord Sri Ramachandra Swamy',
+    mantra: 'శ్రీరామ జయరామ జయజయ రామ • Sri Rama Jaya Rama Jaya Jaya Rama',
+    desc: '108 Sacred Namavali meditating on Maryada Purushottama Lord Sri Ramachandra Swamy, the supreme upholder of Dharma, truth, compassion, and divine grace.'
+  }
 ]
 
-const devotionalStotrams = [
-  'stotram_seethamma',
-  'stotram_amba',
-  'stotram_kasi'
+const harikathaData = [
+  {
+    id: 'harikatha_daksha',
+    titleKey: 'harikatha_daksha',
+    icon: '🔥',
+    category: 'Harikatha Gana',
+    mantra: 'శ్రీ శివ లీలా తరంగిణి • దక్ష యజ్ఞ భంగ వైభవం',
+    desc: 'An electrifying musical Harikatha narrating Daksha Prajapati’s prideful yagna, the sacrifice of Mother Sati, the wrath of Veerabhadra, and Lord Shiva’s supreme cosmic justice.'
+  },
+  {
+    id: 'harikatha_rukmini',
+    titleKey: 'harikatha_rukmini',
+    icon: '💍',
+    category: 'Harikatha Gana',
+    mantra: 'శ్రీ రుక్మిణీ కళ్యాణ మహోత్సవ గానం',
+    desc: 'A divine musical Harikatha celebrating Goddess Rukmini’s secret love letter, Lord Krishna’s daring journey to Kundinapura, and their auspicious celestial wedding ceremony.'
+  }
 ]
+
+const devotionalStotramsData = [
+  {
+    id: 'stotram_seethamma',
+    titleKey: 'stotram_seethamma',
+    icon: '🪷',
+    category: 'Devotional Hymn',
+    mantra: 'శ్రీ జనక నందినీ స్తోత్ర తరంగిణి',
+    desc: 'Heartfelt verses of adoration honoring Mother Seetha Devi, the epitome of sacrifice, purity, patience, and divine motherly grace.'
+  },
+  {
+    id: 'stotram_amba',
+    titleKey: 'stotram_amba',
+    icon: '🌺',
+    category: 'Devotional Hymn',
+    mantra: 'శ్రీ జగన్మాతృ అంబా స్తవమాలిక',
+    desc: 'A rhythmic and potent Sanskrit-Telugu hymn in praise of Goddess Parashakti Amba, bestowing inner strength, family peace, and protection from all distress.'
+  },
+  {
+    id: 'stotram_kasi',
+    titleKey: 'stotram_kasi',
+    icon: '🔱',
+    category: 'Mental Pooja Hymn',
+    mantra: 'కాశీ విశ్వనాథ మానస పూజా విధానమ్',
+    desc: 'A transcendent meditation stotram performing the entire sacred Abhishekam, Harathi, and worship of Lord Kashi Vishwanatha within one’s own heart and mind.'
+  }
+]
+
+const sathakamData = {
+  id: 'sathakam_main',
+  titleKey: 'sathakam_main',
+  icon: '🦁',
+  category: 'Classical Sathakam',
+  mantra: 'శ్రీ ఖాద్రి లక్ష్మీ నృసింహ ప్రభో • పాహిమాం రక్షమాం శరణాగతం',
+  desc: '108 Classical Telugu Metrical Verses dedicated to Lord Sri Lakshmi Narasimha Swamy of Kadiri. Renowned for its poetic elegance, philosophical depth, rhythmic cadence, and intense devotional plea for divine protection and spiritual liberation.'
+}
 
 const milestones = [
   {
@@ -100,18 +215,7 @@ const milestones = [
 
 export default function Founder() {
   const { t } = useLanguage()
-  const { open } = useLightbox()
-
-  const handleBookAction = (book) => {
-    if (book.actionType === 'youtube') {
-      open({
-        type: 'video',
-        title: t(book.titleKey),
-        desc: t(book.genreKey),
-        url: book.youtubeUrl
-      })
-    }
-  }
+  const [selectedWork, setSelectedWork] = useState(null)
 
   return (
     <section id="founder-section" className="section" style={{ position: 'relative', zIndex: 1, padding: '120px 20px 80px' }}>
@@ -176,16 +280,18 @@ export default function Founder() {
                     <p className="founder-book-genre">{t(book.genreKey)}</p>
                   </div>
 
-                  <div className="founder-book-action-wrap">
-                    {book.actionType === 'youtube' ? (
-                      <button 
-                        type="button"
-                        onClick={() => handleBookAction(book)}
+                  <div className="founder-book-action-wrap" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {book.youtubeUrl && (
+                      <a 
+                        href={book.youtubeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="founder-btn-youtube"
                       >
                         <span className="yt-icon">▶</span> {t('btn_listen_youtube')}
-                      </button>
-                    ) : (
+                      </a>
+                    )}
+                    {book.pdfUrl && (
                       <a 
                         href={book.pdfUrl} 
                         target="_blank" 
@@ -203,89 +309,232 @@ export default function Founder() {
 
         </div>
 
-        {/* 3 Classical Dramas & Sthala Puraanam Section */}
+        {/* =========================================================================
+            SECTION 1: CLASSICAL DRAMAS & STHALA PURAANAM (INTERACTIVE BUTTONS & CARDS)
+           ========================================================================= */}
         <AnimatedSection style={{ marginBottom: '4rem' }}>
+          <div className="literary-section-header">
+            <span className="section-badge-pill">🎭 Classical Stage & Literature</span>
+            <h3 className="section-title-sm">Classical Dramas & Sthala Puraanam</h3>
+            <p className="section-desc-sm">Masterpieces composed by Sri Subbaraamappa Gaaru blending poetry, moral duty, and devotion.</p>
+          </div>
+
           <div className="drama-showcase-grid">
             {classicalDramas.map((drama, idx) => (
               <motion.div
                 key={drama.id}
-                className="drama-card glass-card"
+                className="drama-interactive-card glass-card"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
+                whileHover={{ y: -5 }}
               >
-                <div className="drama-icon-box">{drama.icon}</div>
+                <div className="drama-card-top">
+                  <div className="drama-icon-box">{drama.icon}</div>
+                  <span className="drama-genre-badge">{t(drama.genreKey)}</span>
+                </div>
+                
                 <h4 className="drama-title">{t(drama.titleKey)}</h4>
-                <span className="drama-genre-badge">{t(drama.genreKey)}</span>
                 <p className="drama-desc">{drama.desc}</p>
+
+                <button
+                  type="button"
+                  className="drama-action-btn"
+                  onClick={() => setSelectedWork({
+                    title: t(drama.titleKey),
+                    genre: t(drama.genreKey),
+                    icon: drama.icon,
+                    mantra: drama.shloka,
+                    desc: drama.fullDesc,
+                    highlights: drama.highlights
+                  })}
+                >
+                  <span>📖 Read Overview & Highlights</span>
+                  <span>→</span>
+                </button>
               </motion.div>
             ))}
           </div>
         </AnimatedSection>
 
-        {/* Sathakams & Harikathas Grid Section */}
+        {/* =========================================================================
+            SECTION 2 & 3: SATHAKAMS & ASHTOTTARAMS + HARIKATHAS & DEVOTIONAL HYMNS
+           ========================================================================= */}
         <AnimatedSection style={{ marginBottom: '4.5rem' }}>
           <div className="literary-deep-grid">
             
-            {/* Left Box: Sathakams & Ashtottarams */}
+            {/* Left Box: Sathakams & Printed Ashtottarams Buttons */}
             <div className="literary-deep-box glass-card">
               <div className="deep-box-header">
                 <span className="deep-box-icon">📜</span>
-                <h3 className="deep-box-title">{t('sathakams_title')}</h3>
+                <div>
+                  <h3 className="deep-box-title">{t('sathakams_title')}</h3>
+                  <span className="deep-box-subtitle">108 Metrical Verses & Compound Ashtottarams</span>
+                </div>
               </div>
 
               <div className="deep-box-body">
-                <div className="deep-sathakam-featured">
-                  <div className="featured-dot" />
-                  <p className="featured-sathakam-text">{t('sathakam_main')}</p>
+                
+                {/* Featured Sathakam Button */}
+                <div className="featured-sathakam-card">
+                  <div className="featured-sathakam-left">
+                    <span className="featured-sathakam-icon">🦁</span>
+                    <div>
+                      <span className="featured-tag">🌟 Featured Classical Sathakam</span>
+                      <h4 className="featured-sathakam-title">{t('sathakam_main')}</h4>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="featured-sathakam-btn"
+                    onClick={() => setSelectedWork({
+                      title: t('sathakam_main'),
+                      genre: 'Classical Telugu Sathakam (108 Verses)',
+                      icon: '🦁',
+                      mantra: sathakamData.mantra,
+                      desc: sathakamData.desc,
+                      highlights: [
+                        '108 Metrical Telugu Verses to Lord Narasimha Swamy',
+                        'Intense Devotion & Prapatti (Total Surrender)',
+                        'Remover of All Fears, Sorrows, and Malefic Influences',
+                        'Authored in Traditional Classical Padya Kavitvam'
+                      ]
+                    })}
+                  >
+                    <span>🕉️ View Sathakam Details</span>
+                    <span>→</span>
+                  </button>
                 </div>
 
-                <div className="deergha-section">
-                  <h4 className="deergha-title">{t('deergha_title')}</h4>
-                  <div className="ashtottara-pills-wrap">
-                    {ashtottaraList.map((k) => (
-                      <span key={k} className="ashtottara-pill">
-                        {t(k)}
-                      </span>
+                {/* Deergha Samaasa Ashtottarams Button Grid */}
+                <div className="deergha-section" style={{ marginTop: '1.5rem' }}>
+                  <div className="section-label-row">
+                    <h4 className="deergha-title">{t('deergha_title')}</h4>
+                    <span className="pills-count-badge">8 Sacred Ashtottarams</span>
+                  </div>
+
+                  <div className="ashtottara-buttons-grid">
+                    {ashtottaraData.map((item) => (
+                      <motion.button
+                        key={item.id}
+                        type="button"
+                        className="ashtottara-interactive-btn"
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setSelectedWork({
+                          title: t(item.titleKey),
+                          genre: 'Deergha Samaasa Ashtottaram (108 Holy Names)',
+                          icon: item.icon,
+                          mantra: item.mantra,
+                          desc: item.desc,
+                          highlights: [
+                            `Dedicated to ${item.deity}`,
+                            '108 Sacred Compound Divine Epithets (*Deergha Samaasa*)',
+                            'Chanted for Divine Grace, Inner Peace & Prosperity',
+                            'Traditional Archana & Daily Nitya Pooja Namavali'
+                          ]
+                        })}
+                      >
+                        <span className="btn-icon">{item.icon}</span>
+                        <span className="btn-text">{t(item.titleKey)}</span>
+                        <span className="btn-arrow">›</span>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
+
               </div>
             </div>
 
-            {/* Right Box: Harikathas & Devotional Songs */}
+            {/* Right Box: Harikathas & Devotional Songs Buttons */}
             <div className="literary-deep-box glass-card">
               <div className="deep-box-header">
                 <span className="deep-box-icon">🎶</span>
-                <h3 className="deep-box-title">{t('harikathas_title')}</h3>
+                <div>
+                  <h3 className="deep-box-title">{t('harikathas_title')}</h3>
+                  <span className="deep-box-subtitle">Musical Storytelling, Stotrams & Hymns</span>
+                </div>
               </div>
 
               <div className="deep-box-body">
-                <div className="harikatha-section">
-                  <h4 className="harikatha-subhead">{t('harikatha_subhead')}</h4>
-                  <div className="harikatha-items">
-                    <div className="harikatha-item">
-                      <span className="gold-bullet">✦</span>
-                      <span>{t('harikatha_daksha')}</span>
-                    </div>
-                    <div className="harikatha-item">
-                      <span className="gold-bullet">✦</span>
-                      <span>{t('harikatha_rukmini')}</span>
-                    </div>
+                
+                {/* Harikathas Group */}
+                <div className="harikatha-group-section">
+                  <div className="section-label-row">
+                    <h4 className="harikatha-subhead">{t('harikatha_subhead')}</h4>
+                    <span className="pills-count-badge">Musical Dramas</span>
                   </div>
-                </div>
 
-                <div className="devotional-stotrams-section" style={{ marginTop: '1.8rem' }}>
-                  <h4 className="deergha-title">{t('devotional_subhead')}</h4>
-                  <div className="ashtottara-pills-wrap">
-                    {devotionalStotrams.map((k) => (
-                      <span key={k} className="ashtottara-pill stotram-pill">
-                        {t(k)}
-                      </span>
+                  <div className="harikatha-buttons-grid">
+                    {harikathaData.map((hk) => (
+                      <motion.button
+                        key={hk.id}
+                        type="button"
+                        className="harikatha-interactive-btn"
+                        whileHover={{ scale: 1.02, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setSelectedWork({
+                          title: t(hk.titleKey),
+                          genre: hk.category,
+                          icon: hk.icon,
+                          mantra: hk.mantra,
+                          desc: hk.desc,
+                          highlights: [
+                            'Rich Blend of Classical Telugu Ragas & Prose',
+                            'Puranic Drama with Profound Spiritual Morals',
+                            'Celebrates Divine Leelas & Dharma',
+                            'Authored for Public Devotional Musical Discourses'
+                          ]
+                        })}
+                      >
+                        <div className="btn-left">
+                          <span className="hk-bullet">✦</span>
+                          <span className="hk-title">{t(hk.titleKey)}</span>
+                        </div>
+                        <span className="hk-action-tag">View Katha →</span>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
+
+                {/* Devotional Stotrams Group */}
+                <div className="stotrams-group-section" style={{ marginTop: '1.75rem' }}>
+                  <div className="section-label-row">
+                    <h4 className="deergha-title">{t('devotional_subhead')}</h4>
+                    <span className="pills-count-badge">Holy Hymns</span>
+                  </div>
+
+                  <div className="stotrams-buttons-grid">
+                    {devotionalStotramsData.map((st) => (
+                      <motion.button
+                        key={st.id}
+                        type="button"
+                        className="stotram-interactive-btn"
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setSelectedWork({
+                          title: t(st.titleKey),
+                          genre: st.category,
+                          icon: st.icon,
+                          mantra: st.mantra,
+                          desc: st.desc,
+                          highlights: [
+                            'Sacred Devotional Hymn & Daily Prayer',
+                            'Composed in Rhythmic Classical Metres',
+                            'Brings Peace of Mind, Spiritual Focus & Protection',
+                            'Ideal for Morning and Evening Meditation'
+                          ]
+                        })}
+                      >
+                        <span className="st-icon">{st.icon}</span>
+                        <span className="st-name">{t(st.titleKey)}</span>
+                        <span className="st-arrow">›</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
               </div>
             </div>
 
@@ -371,97 +620,79 @@ export default function Founder() {
           </div>
         </AnimatedSection>
 
-        {/* Interactive 3D Books Showcase Section */}
-        <AnimatedSection>
-          <p className="section-subtitle" style={{ textAlign: 'center' }}>Interactive 3D Library</p>
-          <h3 className="section-title" style={{ textAlign: 'center', marginBottom: '3.5rem' }}>{t('literary_title')}</h3>
-          
-          <div className="book-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2.5rem', justifyContent: 'center' }}>
-            {sacredBooks.map(b => (
-              <div key={b.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
-                <div className="book-3d-scene">
-                  <div className="book-3d-card">
-                    
-                    {/* Front Cover */}
-                    <div className="book-3d-front">
-                      <img src={b.img} alt={t(b.titleKey)} />
-                      <div style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        background: 'linear-gradient(transparent, rgba(13,17,23,0.95))',
-                        padding: '1.25rem 1rem 1rem',
-                        textAlign: 'left'
-                      }}>
-                        <h4 className="book-genre" style={{ color: 'var(--primary-gold)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px' }}>
-                          {t(b.genreKey)}
-                        </h4>
-                        <h3 className="book-title" style={{ color: 'var(--text-light)', fontFamily: 'var(--font-serif)', fontSize: '0.95rem', fontWeight: 600, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {t(b.titleKey)}
-                        </h3>
-                      </div>
-                    </div>
-                    
-                    {/* Back Cover */}
-                    <div className="book-3d-back">
-                      <h4 style={{ color: 'var(--primary-gold)', fontSize: '0.85rem', fontFamily: 'var(--font-serif)', marginBottom: '0.75rem', textTransform: 'uppercase' }}>
-                        Synopsis
-                      </h4>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-light)', opacity: 0.9, lineHeight: '1.6', margin: 0 }}>
-                        {b.backDesc}
-                      </p>
-                      <div style={{ marginTop: '1.25rem', fontSize: '0.65rem', color: 'var(--primary-gold)', borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: '0.5rem', width: '100%' }}>
-                        ✦ Sri Subbaraamappa Gaaru
-                      </div>
-                    </div>
+      </div>
 
-                    {/* 3D Pages representation */}
-                    <div className="book-3d-pages" />
-                    
+      {/* =========================================================================
+          SACRED WORK DETAIL MODAL POPUP
+         ========================================================================= */}
+      <AnimatePresence>
+        {selectedWork && (
+          <div className="work-modal-backdrop" onClick={() => setSelectedWork(null)}>
+            <motion.div 
+              className="work-modal-card glass-card"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', stiffness: 260, damping: 25 }}
+            >
+              <div className="work-modal-header">
+                <div className="work-modal-title-wrap">
+                  <span className="work-modal-icon">{selectedWork.icon}</span>
+                  <div>
+                    <span className="work-modal-genre">{selectedWork.genre}</span>
+                    <h3 className="work-modal-title">{selectedWork.title}</h3>
                   </div>
                 </div>
-
-                {/* View / Download options */}
-                <div style={{ display: 'flex', gap: '10px', width: '100%', maxWidth: '240px', justifyContent: 'center' }}>
-                  {b.actionType === 'youtube' ? (
-                    <button 
-                      onClick={() => handleBookAction(b)}
-                      className="btn-secondary"
-                      style={{ flex: 1, padding: '8px 12px', fontSize: '0.78rem', justifyContent: 'center', borderRadius: '8px', whiteSpace: 'nowrap', cursor: 'pointer' }}
-                    >
-                      ▶ {t('btn_listen_youtube')}
-                    </button>
-                  ) : (
-                    <>
-                      <a 
-                        href={b.archiveUrl || b.pdfUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="btn-secondary"
-                        style={{ flex: 1, padding: '8px 12px', fontSize: '0.75rem', justifyContent: 'center', borderRadius: '8px', whiteSpace: 'nowrap' }}
-                      >
-                        📖 View Book
-                      </a>
-                      <a 
-                        href={b.pdfUrl} 
-                        download="Kalaabhaanu-Vijayamu.pdf"
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="btn-primary"
-                        style={{ flex: 1, padding: '8px 12px', fontSize: '0.75rem', justifyContent: 'center', borderRadius: '8px', whiteSpace: 'nowrap' }}
-                      >
-                        📥 PDF
-                      </a>
-                    </>
-                  )}
-                </div>
+                <button
+                  type="button"
+                  className="work-modal-close-btn"
+                  onClick={() => setSelectedWork(null)}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
               </div>
-            ))}
-          </div>
-        </AnimatedSection>
 
-      </div>
+              {selectedWork.mantra && (
+                <div className="work-modal-shloka-box">
+                  <span className="shloka-om">🕉️</span>
+                  <p className="work-modal-shloka">{selectedWork.mantra}</p>
+                </div>
+              )}
+
+              <div className="work-modal-body">
+                <p className="work-modal-desc">{selectedWork.desc}</p>
+
+                {selectedWork.highlights && selectedWork.highlights.length > 0 && (
+                  <div className="work-modal-highlights">
+                    <h5 className="highlights-title">✦ Sacred Significance & Themes:</h5>
+                    <ul className="highlights-list">
+                      {selectedWork.highlights.map((h, i) => (
+                        <li key={i}>
+                          <span className="highlight-bullet">✓</span>
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div className="work-modal-footer">
+                <button
+                  type="button"
+                  className="btn-primary modal-close-btn-bottom"
+                  onClick={() => setSelectedWork(null)}
+                >
+                  <span>✓</span> Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </section>
   )
 }

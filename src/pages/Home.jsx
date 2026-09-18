@@ -1,10 +1,11 @@
+import { Suspense } from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { Float } from '@react-three/drei'
 import { TextureLoader } from 'three'
-import AnimatedSection from '../components/AnimatedSection'
+import ScrollingTicker from '../components/ScrollingTicker'
 
 function RamaBanamBg() {
   const texture = useLoader(TextureLoader, '/assets/Rama_Banamm.png')
@@ -20,10 +21,10 @@ function RamaBanamBg() {
 
 export default function Home() {
   const { t } = useLanguage()
-  const { playing, togglePlay, volume, setVolume } = useAudio()
 
   return (
     <>
+      <ScrollingTicker />
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-overlay" />
@@ -37,7 +38,9 @@ export default function Home() {
           }}
         >
           <ambientLight intensity={1} />
-          <RamaBanamBg />
+          <Suspense fallback={null}>
+            <RamaBanamBg />
+          </Suspense>
         </Canvas>
 
         <div className="hero-content">
@@ -103,68 +106,6 @@ export default function Home() {
             </motion.div>
           </div>
         </div>
-      </section>
-
-      {/* Founder Tribute & Spotlight Section on Home */}
-      <section className="section" style={{ position: 'relative', zIndex: 2, padding: '40px 20px 80px' }}>
-        <AnimatedSection className="section-container" style={{ maxWidth: '1140px', margin: '0 auto' }}>
-          <div className="home-founder-spotlight glass-card">
-            <div className="home-founder-portrait-col">
-              <div className="founder-portrait-frame animated-border-glow" style={{ maxWidth: '280px', margin: '0 auto' }}>
-                <img
-                  src="/assets/founder_portrait.png"
-                  alt={t('founder_name')}
-                  style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '16px' }}
-                />
-              </div>
-              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-                <h4 style={{ color: 'var(--bright-gold)', fontFamily: 'var(--font-serif)', fontSize: '1.15rem', margin: '0 0 4px' }}>
-                  {t('founder_name')}
-                </h4>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: '1.4', margin: 0 }}>
-                  {t('founder_role')}
-                </p>
-              </div>
-            </div>
-
-            <div className="home-founder-info-col">
-              <span className="hero-badge" style={{ display: 'inline-block', marginBottom: '0.75rem', width: 'fit-content' }}>
-                {t('founder_home_badge')}
-              </span>
-              <h2 style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontSize: '2rem', marginBottom: '0.8rem' }}>
-                {t('founder_home_title')}
-              </h2>
-              <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: '1.8', marginBottom: '1.25rem' }}>
-                {t('founder_home_desc')}
-              </p>
-
-              {/* 3 Books Mini Row */}
-              <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-                  <img src="/assets/book_ramayanam.png" alt="Ramayanam" style={{ width: '28px', height: '36px', objectFit: 'cover', borderRadius: '4px' }} />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--light-gold)' }}>{t('book1_title')}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-                  <img src="/assets/book_eeswara.png" alt="Eeswara" style={{ width: '28px', height: '36px', objectFit: 'cover', borderRadius: '4px' }} />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--light-gold)' }}>{t('book2_title')}</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--glass-border)' }}>
-                  <img src="/assets/book_kalaabhanu.png" alt="Kalaabhanu" style={{ width: '28px', height: '36px', objectFit: 'cover', borderRadius: '4px' }} />
-                  <span style={{ fontSize: '0.8rem', color: 'var(--light-gold)' }}>{t('book3_title')}</span>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                <Link to="/founder" className="btn-primary">
-                  {t('founder_home_cta')}
-                </Link>
-                <Link to="/gallery" className="btn-secondary">
-                  {t('nav_gallery')}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </AnimatedSection>
       </section>
     </>
   )

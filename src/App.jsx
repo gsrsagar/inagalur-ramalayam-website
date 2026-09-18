@@ -20,7 +20,6 @@ import Founder from './pages/Founder'
 import Services from './pages/Services'
 import Admin from './pages/Admin'
 import ParticleBackground from './components/ParticleBackground'
-import AudioControl from './components/AudioControl'
 import { LightboxProvider } from './components/Lightbox'
 import DonateModal from './components/DonateModal'
 
@@ -37,7 +36,7 @@ function PageTransition({ children }) {
   )
 }
 
-export default function App() {
+function AppContent() {
   const location = useLocation()
 
   useEffect(() => {
@@ -45,31 +44,38 @@ export default function App() {
   }, [location.pathname])
 
   return (
+    <LightboxProvider>
+      <ParticleBackground />
+      <Navbar />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+          <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
+          <Route path="/members" element={<PageTransition><Members /></PageTransition>} />
+          <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
+          <Route path="/gallery" element={<PageTransition><FloatingGallery /></PageTransition>} />
+          <Route path="/history" element={<PageTransition><History /></PageTransition>} />
+          <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+          <Route path="/founder" element={<PageTransition><Founder /></PageTransition>} />
+          <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
+          <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
+        </Routes>
+      </AnimatePresence>
+      <Footer />
+      <DonateModal />
+    </LightboxProvider>
+  )
+}
+
+export default function App() {
+  return (
     <AuthProvider>
       <ContentProvider>
         <DataProvider>
           <LanguageProvider>
-            <LightboxProvider>
-              <ParticleBackground />
-              <Navbar />
-              <AnimatePresence mode="wait">
-                <Routes location={location} key={location.pathname}>
-                  <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-                  <Route path="/events" element={<PageTransition><Events /></PageTransition>} />
-                  <Route path="/members" element={<PageTransition><Members /></PageTransition>} />
-                  <Route path="/activities" element={<PageTransition><Activities /></PageTransition>} />
-                  <Route path="/gallery" element={<PageTransition><FloatingGallery /></PageTransition>} />
-                  <Route path="/history" element={<PageTransition><History /></PageTransition>} />
-                  <Route path="/about" element={<PageTransition><About /></PageTransition>} />
-                  <Route path="/founder" element={<PageTransition><Founder /></PageTransition>} />
-                  <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
-                  <Route path="/admin" element={<PageTransition><Admin /></PageTransition>} />
-                </Routes>
-              </AnimatePresence>
-              <Footer />
-              <AudioControl />
-              <DonateModal />
-            </LightboxProvider>
+            <AudioProvider>
+              <AppContent />
+            </AudioProvider>
           </LanguageProvider>
         </DataProvider>
       </ContentProvider>

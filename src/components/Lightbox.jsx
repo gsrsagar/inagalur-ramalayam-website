@@ -146,7 +146,7 @@ const LightboxProvider = ({ children }) => {
                     rel="noopener noreferrer"
                     className="btn-secondary lightbox-open-btn"
                   >
-                    ↗️ Open Original
+                    {getYouTubeId(data.url) ? '▶ Open on YouTube' : '↗️ Open Original'}
                   </a>
                 )}
 

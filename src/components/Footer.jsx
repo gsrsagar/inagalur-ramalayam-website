@@ -46,9 +46,9 @@ export default function Footer() {
           
           {/* Social Handles */}
           <div style={{ display: 'flex', gap: '12px', marginTop: '0.5rem' }}>
-            {settings.youtube && (
+            {(settings.youtube || 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg') && (
               <motion.a 
-                href={settings.youtube} 
+                href={settings.youtube || 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg'} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.15 }}
@@ -165,9 +165,11 @@ export default function Footer() {
         gap: '1rem', 
         flexWrap: 'wrap'
       }}>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0 }}>
-          &copy; {new Date().getFullYear()} Sree Sitha Raama Swamy Devasthaanam. All rights reserved.
-        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0 }}>
+            &copy; {new Date().getFullYear()} Sree Sitha Raama Swamy Devasthaanam. All rights reserved.
+          </p>
+        </div>
         <div>
           {user ? (
             <button

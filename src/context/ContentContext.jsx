@@ -15,7 +15,7 @@ export function ContentProvider({ children }) {
   const [settings, setSettings] = useState({
     email: 'kkpancharathnam@gmail.com',
     phone: '+91 99087 15022 / +91 94411 91394',
-    youtube: 'https://youtube.com',
+    youtube: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg',
     instagram: 'https://instagram.com',
     accountType: 'CURRENT ACCOUNT',
     accountName: 'Sri Seetha Lakshmana Hanumath sametha Ramachandra Swamy Temple Trust',

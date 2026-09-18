@@ -7,13 +7,10 @@ import { useLightbox } from '../components/Lightbox'
 
 const defaultGalleryItems = [
   { id: 'rec1', type: 'photo', category: 'sanctum', title: 'Temple Grand Re-construction & Puna Prathistha 1', desc: 'Ancient Granite Architecture & Consecration', url: '/assets/temple_reconstruction1.jpeg' },
-  { id: 'rec2', type: 'photo', category: 'sanctum', title: 'Temple Grand Re-construction 2', desc: 'Sanctum Elevation & Traditional Stone Craftsmanship', url: '/assets/temple_reconstruction2.jpeg' },
-  { id: 'm3', type: 'photo', category: 'sanctum', title: 'The 2024 Reconstruction Gopuram', desc: 'Granite Architecture & Illuminations', url: '/assets/temple_reconstruction.png' },
+  { id: 'rec2', type: 'photo', category: 'sanctum', title: 'Temple Grand Re-construction & Puna Prathistha 2', desc: 'Sanctum Elevation & Traditional Stone Craftsmanship', url: '/assets/temple_reconstruction2.jpeg' },
   { id: 'm1', type: 'photo', category: 'sanctum', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
   { id: 'm4', type: 'photo', category: 'service', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service', url: '/assets/founder_portrait.png' },
-  { id: 'm2', type: 'video', category: 'sevas', title: 'Virtual Darshan & Suprabhata Seva', desc: 'Morning Abhishekam & Chanting Video', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/temple_reconstruction.png' },
-  { id: 'm5', type: 'video', category: 'service', title: 'Anna Daana Satram Prasadam Service', desc: 'Devotees partaking sacred prasadam meals', url: 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg&pp=sAgC', thumb: '/assets/anna_daana.png' },
-  { id: 'm6', type: 'photo', category: 'literature', title: 'Sacred Ramayana Book', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: '/assets/book_ramayanam.png' },
+  { id: 'm6', type: 'video', category: 'literature', title: 'Sacred Ramayana Book (Audio & Chants)', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: 'https://www.youtube.com/watch?v=wVGH-9Znwq4&list=PL4-zN5NLKyzwvbvtFOQYp7UjC62whcu', thumb: '/assets/book_ramayanam.png' },
 ]
 
 function getYouTubeId(url) {

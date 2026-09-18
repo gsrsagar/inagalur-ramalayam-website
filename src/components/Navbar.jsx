@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
+import { useAudio } from '../context/AudioContext'
 import { motion } from 'framer-motion'
 
 const languages = [
@@ -12,11 +13,11 @@ const languages = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const { t, lang, setLang } = useLanguage()
+  const { playing, togglePlay } = useAudio()
   const location = useLocation()
 
   const links = [
     { to: '/', label: t('nav_home') },
-    { to: '/gallery', label: t('nav_gallery') },
     { to: '/history', label: t('nav_history') },
     { to: '/about', label: t('nav_about') },
     { to: '/founder', label: t('nav_founder') },
@@ -62,6 +63,26 @@ export default function Navbar() {
         </nav>
 
         <div className="nav-actions">
+          {/* Sacred Chant Audio Button - Stop / Play control */}
+          <button
+            type="button"
+            onClick={togglePlay}
+            className={`nav-chant-btn ${playing ? 'playing' : ''}`}
+            title={playing ? 'Stop / Pause Sacred Chant (Sri Rama Jaya Rama Jaya Jaya Rama)' : 'Play Sacred Chant (Sri Rama Jaya Rama Jaya Jaya Rama)'}
+            aria-label={playing ? 'Stop Sacred Chant' : 'Play Sacred Chant'}
+          >
+            <span className="nav-chant-om">🕉️</span>
+            <span className="nav-chant-icon">{playing ? '⏸' : '▶'}</span>
+            <span className="nav-chant-text">{t('nav_chant_btn') || 'Sri Raama Jaya Raama Jaya Jaya Raam'}</span>
+            {playing ? (
+              <span className="nav-chant-bars">
+                <span className="chant-bar bar-1"></span>
+                <span className="chant-bar bar-2"></span>
+                <span className="chant-bar bar-3"></span>
+              </span>
+            ) : null}
+          </button>
+
           <div className="lang-selector">
             {languages.map((l) => (
               <button

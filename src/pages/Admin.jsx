@@ -18,6 +18,8 @@ const tabs = [
 
 const pageKeys = [
   { id: 'home', label: 'Home Page', icon: '🏠', color: '#D4AF37', fields: [
+    { key: 'home_scrolling_ticker_label', label: 'Scrolling Banner Badge', type: 'text', hint: 'e.g. 🕉️ Announcements / ఆలయ సమాచారం' },
+    { key: 'home_scrolling_ticker_text', label: 'Scrolling Banner Message', type: 'textarea', hint: 'Continuous scrolling announcement message in the selected language' },
     { key: 'hero_badge', label: 'Hero Badge', type: 'text', hint: 'Short badge text (e.g. "Est. 1950")' },
     { key: 'hero_subtitle', label: 'Hero Subtitle', type: 'text', hint: 'Main subtitle under the title' },
     { key: 'hero_year_label', label: 'Year Label', type: 'text', hint: 'Year display label' },
