@@ -36,22 +36,6 @@ export default function Services() {
       <AnimatedSection>
         <div className="services-grid">
           <div className="service-card highlight">
-            <div className="service-icon">🍛</div>
-            <h3 className="service-title">{t('service1_title')}</h3>
-            <p className="service-desc">{t('service1_desc')}</p>
-            <div className="service-stats">
-              <div className="stat">
-                <span className="stat-value">10,000+</span>
-                <span className="stat-label">{t('service1_stat1')}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-value">30</span>
-                <span className="stat-label">{t('service1_stat2')}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="service-card">
             <div className="service-icon">🪔</div>
             <h3 className="service-title">{t('service2_title')}</h3>
             <p className="service-desc">{t('service2_desc')}</p>

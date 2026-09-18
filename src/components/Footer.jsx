@@ -169,6 +169,9 @@ export default function Footer() {
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0 }}>
             &copy; {new Date().getFullYear()} Sree Sitha Raama Swamy Devasthaanam. All rights reserved.
           </p>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.72rem', opacity: 0.85, margin: 0 }}>
+            Website created and designed by <span style={{ color: 'var(--primary-gold)', fontWeight: 500 }}>Nuligommu VaraPradeep</span>
+          </p>
         </div>
         <div>
           {user ? (

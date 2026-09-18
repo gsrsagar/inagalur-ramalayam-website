@@ -39,10 +39,10 @@ const pageKeys = [
   { id: 'services', label: 'Services Page', icon: '⚡', color: '#fbbf24', fields: [
     { key: 'services_subtitle', label: 'Subtitle', type: 'text', hint: 'Section subtitle' },
     { key: 'services_title', label: 'Title', type: 'text', hint: 'Main section heading' },
-    { key: 'service1_title', label: 'Service 1 Title', type: 'text', hint: 'First service name' },
-    { key: 'service1_desc', label: 'Service 1 Desc', type: 'textarea', hint: 'First service details' },
-    { key: 'service2_title', label: 'Service 2 Title', type: 'text', hint: 'Second service name' },
-    { key: 'service2_desc', label: 'Service 2 Desc', type: 'textarea', hint: 'Second service details' },
+    { key: 'service2_title', label: 'Service 1 Title', type: 'text', hint: 'First service name (Pooja/Abhishekam)' },
+    { key: 'service2_desc', label: 'Service 1 Desc', type: 'textarea', hint: 'First service details' },
+    { key: 'service3_title', label: 'Service 2 Title', type: 'text', hint: 'Second service name (Discourses/Satsang)' },
+    { key: 'service3_desc', label: 'Service 2 Desc', type: 'textarea', hint: 'Second service details' },
   ]},
   { id: 'footer', label: 'Footer', icon: '🔻', color: '#34d399', fields: [
     { key: 'footer_contact_heading', label: 'Contact Heading', type: 'text', hint: 'Contact section title' },
@@ -1697,66 +1697,201 @@ function SettingsTab({ showToast }) {
 
 /* ===== MEDIA TAB ===== */
 function MediaTab({ showToast }) {
-  const { uploadImage } = useData()
-  const [files, setFiles] = useState([])
+  const { gallery, addItem, updateItem, deleteItem, uploadImage } = useData()
+  const [activeSubTab, setActiveSubTab] = useState('gallery') // 'gallery' | 'files'
+  const [storageFiles, setStorageFiles] = useState([])
+  const [loadingFiles, setLoadingFiles] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState(null)
   const [search, setSearch] = useState('')
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [editingItem, setEditingItem] = useState(null)
+  const [itemToDelete, setItemToDelete] = useState(null)
+  const [fileToDelete, setFileToDelete] = useState(null)
   const [copiedKey, setCopiedKey] = useState(null)
-  const [dragActive, setDragActive] = useState(false)
 
-  const loadFiles = async () => {
+  const [form, setForm] = useState({
+    type: 'photo',
+    category: 'sanctum',
+    title: '',
+    desc: '',
+    url: '',
+    thumb: ''
+  })
+
+  const fileInputRef = useRef(null)
+  const directFileInputRef = useRef(null)
+
+  const loadStorageFiles = useCallback(async () => {
+    setLoadingFiles(true)
     try {
       const { listAll, ref, getDownloadURL } = await import('firebase/storage')
       const { storage } = await import('../firebase')
-      const list = await listAll(ref(storage, 'uploads'))
-      const urls = await Promise.all(list.items.map(async item => ({ name: item.name, url: await getDownloadURL(item) })))
-      setFiles(urls)
-    } catch { setFiles([]) }
+      const list = await listAll(ref(storage, 'gallery'))
+      const urls = await Promise.all(list.items.map(async item => ({
+        name: item.name,
+        fullPath: item.fullPath,
+        url: await getDownloadURL(item)
+      })))
+      setStorageFiles(urls)
+    } catch {
+      // Fallback: list from existing gallery URLs
+      const localFiles = (gallery || []).map(g => ({
+        name: g.title || 'Media File',
+        fullPath: g.url,
+        url: g.url
+      }))
+      setStorageFiles(localFiles)
+    }
+    setLoadingFiles(false)
+  }, [gallery])
+
+  useEffect(() => {
+    if (activeSubTab === 'files') {
+      loadStorageFiles()
+    }
+  }, [activeSubTab, loadStorageFiles])
+
+  const handleOpenAdd = () => {
+    setEditingItem(null)
+    setForm({
+      type: 'photo',
+      category: 'sanctum',
+      title: '',
+      desc: '',
+      url: '',
+      thumb: ''
+    })
+    setShowAddModal(true)
   }
 
-  useEffect(() => { loadFiles() }, [])
+  const handleOpenEdit = (item) => {
+    setEditingItem(item)
+    setForm({
+      type: item.type || 'photo',
+      category: item.category || 'sanctum',
+      title: item.title || '',
+      desc: item.desc || '',
+      url: item.url || '',
+      thumb: item.thumb || ''
+    })
+    setShowAddModal(true)
+  }
 
-  const handleUpload = async (file) => {
+  const handleFileUpload = async (file) => {
     if (!file) return
     setUploading(true)
-    try { 
-      await uploadImage(file, 'uploads')
-      await loadFiles()
-      showToast('Image uploaded successfully!') 
-    } catch (err) { 
-      showToast('Upload failed: ' + err.message, 'error') 
+    try {
+      const url = await uploadImage(file, 'gallery')
+      setForm(prev => ({
+        ...prev,
+        url: url,
+        thumb: prev.type === 'video' ? url : prev.thumb
+      }))
+      showToast('Photo uploaded successfully!')
+    } catch (err) {
+      showToast('Upload failed: ' + err.message, 'error')
     }
     setUploading(false)
   }
 
-  const handleDrag = (e) => {
+  const handleDirectFileUpload = async (file) => {
+    if (!file) return
+    setUploading(true)
+    try {
+      const url = await uploadImage(file, 'gallery')
+      await addItem('gallery', {
+        type: 'photo',
+        category: 'sanctum',
+        title: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " "),
+        desc: 'Uploaded media asset',
+        url: url
+      })
+      await loadStorageFiles()
+      showToast('File uploaded and added to Media library!')
+    } catch (err) {
+      showToast('Upload failed: ' + err.message, 'error')
+    }
+    setUploading(false)
+  }
+
+  const handleSave = async (e) => {
     e.preventDefault()
-    e.stopPropagation()
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
-    } else if (e.type === "dragleave") {
-      setDragActive(false)
+    if (!form.title.trim() || !form.url.trim()) {
+      showToast('Please provide a Title and Media URL', 'error')
+      return
+    }
+
+    try {
+      if (editingItem) {
+        await updateItem('gallery', editingItem.id || editingItem._id, form)
+        showToast('Media entry updated successfully!')
+      } else {
+        await addItem('gallery', form)
+        showToast('New Photo/Video added to gallery!')
+      }
+      setShowAddModal(false)
+      setEditingItem(null)
+    } catch (err) {
+      showToast('Failed to save media: ' + err.message, 'error')
     }
   }
 
-  const handleDrop = async (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      await handleUpload(e.dataTransfer.files[0])
+  const handleDeleteGalleryItem = async () => {
+    if (!itemToDelete) return
+    try {
+      await deleteItem('gallery', itemToDelete.id || itemToDelete._id)
+      showToast('Media item deleted and removed from website!')
+      setItemToDelete(null)
+    } catch (err) {
+      showToast('Failed to delete media', 'error')
+    }
+  }
+
+  const handleDeleteStorageFile = async () => {
+    if (!fileToDelete) return
+    try {
+      // If fullPath is in firebase storage
+      try {
+        const { ref, deleteObject } = await import('firebase/storage')
+        const { storage } = await import('../firebase')
+        if (fileToDelete.fullPath && !fileToDelete.fullPath.startsWith('/assets/')) {
+          await deleteObject(ref(storage, fileToDelete.fullPath))
+        }
+      } catch (e) {
+        console.warn('Storage deletion fallback', e)
+      }
+
+      // Also remove any gallery item that uses this URL
+      const matchingGalleryItem = (gallery || []).find(g => g.url === fileToDelete.url)
+      if (matchingGalleryItem) {
+        await deleteItem('gallery', matchingGalleryItem.id || matchingGalleryItem._id)
+      }
+
+      setStorageFiles(prev => prev.filter(f => f.url !== fileToDelete.url))
+      showToast('File removed and deleted successfully!')
+      setFileToDelete(null)
+    } catch (err) {
+      showToast('Failed to remove file: ' + err.message, 'error')
     }
   }
 
   const handleCopy = (url, name) => {
     navigator.clipboard.writeText(url)
     setCopiedKey(name)
-    showToast('Image URL copied to clipboard!')
+    showToast('Media URL copied to clipboard!')
     setTimeout(() => setCopiedKey(null), 2000)
   }
 
-  const filtered = files.filter(f => f.name.toLowerCase().includes(search.toLowerCase()))
+  const filteredGallery = (gallery || []).filter(f => 
+    (f.title || '').toLowerCase().includes(search.toLowerCase()) ||
+    (f.desc || '').toLowerCase().includes(search.toLowerCase()) ||
+    (f.category || '').toLowerCase().includes(search.toLowerCase())
+  )
+
+  const filteredStorageFiles = storageFiles.filter(f =>
+    (f.name || '').toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -1764,88 +1899,382 @@ function MediaTab({ showToast }) {
       {/* Header toolbar */}
       <motion.div variants={itemVariants} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 className="section-title" style={{ fontSize: '1.8rem', margin: 0 }}>Media Library</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>{filtered.length} files available</p>
+          <h2 className="section-title" style={{ fontSize: '1.8rem', margin: 0 }}>Media & File Management</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>
+            Upload, edit, remove, and permanently delete photos and videos from website & storage
+          </p>
         </div>
         
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
           <input 
             type="text" 
             className="form-input" 
-            placeholder="🔍 Search files..." 
+            placeholder="🔍 Search media & files..." 
             value={search}
             onChange={e => setSearch(e.target.value)} 
             style={{ width: '220px', fontSize: '0.85rem', padding: '9px 14px', borderRadius: '10px' }} 
           />
           
-          <motion.label 
+          <input
+            type="file"
+            ref={directFileInputRef}
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={e => handleDirectFileUpload(e.target.files[0])}
+          />
+
+          <motion.button
+            type="button"
             whileHover={{ scale: 1.03 }} 
             whileTap={{ scale: 0.97 }}
-            className="btn-primary" 
-            style={{ padding: '10px 20px', cursor: 'pointer', borderRadius: '10px' }}
+            onClick={() => directFileInputRef.current?.click()}
+            disabled={uploading}
+            className="btn-secondary" 
+            style={{ padding: '10px 18px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            {uploading ? '⏳ Uploading...' : '📤 Select Image'}
-            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleUpload(e.target.files[0])} disabled={uploading} />
-          </motion.label>
+            <span>📁</span>
+            <span>{uploading ? 'Uploading...' : 'Quick Upload File'}</span>
+          </motion.button>
+
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.03 }} 
+            whileTap={{ scale: 0.97 }}
+            onClick={handleOpenAdd}
+            className="btn-primary" 
+            style={{ padding: '10px 20px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>➕</span>
+            <span>Add Photo / Video</span>
+          </motion.button>
         </div>
       </motion.div>
 
-      {/* Drag-and-drop Zone */}
-      <motion.div 
-        onDragEnter={handleDrag}
-        onDragOver={handleDrag}
-        onDragLeave={handleDrag}
-        onDrop={handleDrop}
-        className={`uploader-dropzone ${dragActive ? 'dragging' : ''}`}
-        style={{ padding: '2rem', borderStyle: 'dashed' }}
-      >
-        <span style={{ fontSize: '2rem' }}>🖼️</span>
-        <div style={{ fontSize: '0.85rem', color: 'var(--text-light)', fontWeight: 600 }}>Drag & drop new images anywhere here to upload</div>
-        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Files will be saved directly to Firebase Storage bucket</div>
+      {/* Sub-Tabs: Gallery vs Uploaded Storage Files */}
+      <motion.div variants={itemVariants} style={{ display: 'flex', gap: '0.75rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.75rem' }}>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab('gallery')}
+          className={`filter-pill ${activeSubTab === 'gallery' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <span>🖼️</span>
+          <span>Published Gallery ({gallery?.length || 0})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveSubTab('files')}
+          className={`filter-pill ${activeSubTab === 'files' ? 'active' : ''}`}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+        >
+          <span>📂</span>
+          <span>Storage Files & Uploads ({storageFiles.length})</span>
+        </button>
       </motion.div>
 
-      {/* Grid displays */}
-      {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-          <p style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>📸</p>
-          <p style={{ fontSize: '0.95rem' }}>No media files matching search filter.</p>
-        </div>
-      ) : (
-        <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.25rem' }}>
-          {filtered.map(f => (
-            <motion.div 
-              key={f.name} 
-              variants={itemVariants} 
-              whileHover={{ y: -5 }}
-              className="crud-grid-card" 
-              style={{ position: 'relative', cursor: 'pointer' }}
-              onClick={() => setPreview(f.url)}
-            >
-              {copiedKey === f.name && (
-                <div className="copy-badge-overlay">Copied!</div>
-              )}
-              <div style={{ height: '150px', background: 'rgba(0,0,0,0.1)' }}>
-                <img src={f.url} alt={f.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
-                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', wordBreak: 'break-all', margin: 0, fontWeight: 500, flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }} title={f.name}>
-                  {f.name}
-                </p>
-                <motion.button 
-                  type="button" 
-                  className="btn-secondary" 
-                  whileHover={{ scale: 1.02 }} 
-                  whileTap={{ scale: 0.98 }}
-                  style={{ width: '100%', padding: '6px', fontSize: '0.7rem', justifyContent: 'center', borderRadius: '6px' }}
-                  onClick={e => { e.stopPropagation(); handleCopy(f.url, f.name) }}
+      {/* SubTab 1: Published Gallery Items */}
+      {activeSubTab === 'gallery' && (
+        <>
+          {filteredGallery.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>📸</p>
+              <p style={{ fontSize: '0.95rem' }}>No media items found. Click &quot;Add Photo / Video&quot; to upload.</p>
+            </div>
+          ) : (
+            <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
+              {filteredGallery.map(item => {
+                const isVideo = item.type === 'video'
+                const displayImg = item.thumb || item.url
+
+                return (
+                  <motion.div 
+                    key={item.id || item._id} 
+                    variants={itemVariants} 
+                    whileHover={{ y: -5 }}
+                    className="crud-grid-card" 
+                    style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', background: 'var(--card-bg, rgba(20, 24, 33, 0.7))', border: '1px solid var(--glass-border)', display: 'flex', flexDirection: 'column' }}
+                  >
+                    {copiedKey === item.id && (
+                      <div className="copy-badge-overlay">Copied!</div>
+                    )}
+                    
+                    <div style={{ height: '180px', background: 'rgba(0,0,0,0.2)', position: 'relative', cursor: 'pointer' }} onClick={() => setPreview(item.url)}>
+                      <img src={displayImg} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div className="crud-card-badge" style={{ position: 'absolute', top: 10, left: 10 }}>
+                        {isVideo ? '🎥 Video' : '🖼️ Photo'}
+                      </div>
+                      <div className="crud-card-badge" style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(0,0,0,0.7)', textTransform: 'capitalize' }}>
+                        {item.category || 'sanctum'}
+                      </div>
+                    </div>
+
+                    <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                      <h4 style={{ fontSize: '1rem', color: 'var(--primary-gold)', margin: 0, fontWeight: 600 }}>
+                        {item.title}
+                      </h4>
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-light)', margin: 0, flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {item.desc || 'No description provided.'}
+                      </p>
+                      
+                      {/* Action buttons with clear delete option */}
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '0.75rem', borderTop: '1px solid var(--glass-border)', paddingTop: '0.75rem' }}>
+                        <motion.button 
+                          type="button" 
+                          className="btn-secondary" 
+                          whileHover={{ scale: 1.02 }} 
+                          whileTap={{ scale: 0.98 }}
+                          style={{ flex: 1, padding: '7px', fontSize: '0.75rem', justifyContent: 'center', borderRadius: '8px' }}
+                          onClick={() => handleOpenEdit(item)}
+                        >
+                          ✏️ Edit
+                        </motion.button>
+                        <motion.button 
+                          type="button" 
+                          className="btn-secondary" 
+                          whileHover={{ scale: 1.02 }} 
+                          whileTap={{ scale: 0.98 }}
+                          style={{ padding: '7px 12px', fontSize: '0.75rem', justifyContent: 'center', borderRadius: '8px' }}
+                          onClick={() => handleCopy(item.url, item.id)}
+                          title="Copy Image / Video URL"
+                        >
+                          📋
+                        </motion.button>
+                        <motion.button 
+                          type="button" 
+                          className="btn-secondary" 
+                          whileHover={{ scale: 1.02 }} 
+                          whileTap={{ scale: 0.98 }}
+                          style={{
+                            padding: '7px 14px',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            justifyContent: 'center',
+                            borderRadius: '8px',
+                            background: 'rgba(239,68,68,0.2)',
+                            color: '#ff6b6b',
+                            borderColor: 'rgba(239,68,68,0.4)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                          onClick={() => setItemToDelete(item)}
+                          title="Remove / Delete from Gallery"
+                        >
+                          <span>🗑️</span>
+                          <span>Delete</span>
+                        </motion.button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </motion.div>
+          )}
+        </>
+      )}
+
+      {/* SubTab 2: Storage Files & Uploads */}
+      {activeSubTab === 'files' && (
+        <div>
+          {loadingFiles ? (
+            <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--primary-gold)' }}>
+              ⏳ Loading storage bucket files...
+            </div>
+          ) : filteredStorageFiles.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>📁</p>
+              <p style={{ fontSize: '0.95rem' }}>No uploaded files found.</p>
+            </div>
+          ) : (
+            <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.25rem' }}>
+              {filteredStorageFiles.map(file => (
+                <motion.div 
+                  key={file.url} 
+                  variants={itemVariants} 
+                  whileHover={{ y: -4 }}
+                  className="crud-grid-card" 
+                  style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', background: 'var(--card-bg, rgba(20, 24, 33, 0.7))', border: '1px solid var(--glass-border)' }}
                 >
-                  📋 Copy URL
-                </motion.button>
+                  <div style={{ height: '150px', background: 'rgba(0,0,0,0.2)', position: 'relative', cursor: 'pointer' }} onClick={() => setPreview(file.url)}>
+                    <img src={file.url} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-light)', margin: 0, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={file.name}>
+                      📄 {file.name}
+                    </p>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <motion.button 
+                        type="button" 
+                        className="btn-secondary" 
+                        whileHover={{ scale: 1.02 }} 
+                        whileTap={{ scale: 0.98 }}
+                        style={{ flex: 1, padding: '6px', fontSize: '0.7rem', justifyContent: 'center', borderRadius: '6px' }}
+                        onClick={() => handleCopy(file.url, file.name)}
+                      >
+                        📋 Copy URL
+                      </motion.button>
+                      <motion.button 
+                        type="button" 
+                        className="btn-secondary" 
+                        whileHover={{ scale: 1.02 }} 
+                        whileTap={{ scale: 0.98 }}
+                        style={{ padding: '6px 12px', fontSize: '0.7rem', justifyContent: 'center', borderRadius: '6px', background: 'rgba(239,68,68,0.2)', color: '#ff6b6b', borderColor: 'rgba(239,68,68,0.4)', fontWeight: 700 }}
+                        onClick={() => setFileToDelete(file)}
+                        title="Delete / Remove this File"
+                      >
+                        🗑️ Delete
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      )}
+
+      {/* Add / Edit Media Modal */}
+      <AnimatePresence>
+        {showAddModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 20000, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)', padding: '1.5rem' }}
+            onClick={() => setShowAddModal(false)}>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: 'var(--dark-navy, #0f172a)', border: '1px solid var(--border-gold)', borderRadius: '20px', width: '100%', maxWidth: '540px', maxHeight: '90vh', overflowY: 'auto', padding: '2rem', boxShadow: '0 25px 50px rgba(0,0,0,0.8)' }}>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h3 style={{ margin: 0, fontFamily: 'var(--font-serif)', color: 'var(--primary-gold)' }}>
+                  {editingItem ? '✏️ Edit Media' : '➕ Add Photo / Video'}
+                </h3>
+                <button type="button" onClick={() => setShowAddModal(false)} style={{ background: 'none', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }}>✕</button>
+              </div>
+
+              <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div>
+                  <label className="form-label">Media Type</label>
+                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                    <button type="button" onClick={() => setForm(p => ({ ...p, type: 'photo' }))} className={`filter-pill ${form.type === 'photo' ? 'active' : ''}`} style={{ flex: 1, justifyContent: 'center' }}>
+                      🖼️ Photo
+                    </button>
+                    <button type="button" onClick={() => setForm(p => ({ ...p, type: 'video' }))} className={`filter-pill ${form.type === 'video' ? 'active' : ''}`} style={{ flex: 1, justifyContent: 'center' }}>
+                      🎥 Video
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="form-label">Category</label>
+                  <select className="form-input" value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))} style={{ width: '100%', background: 'rgba(255,255,255,0.06)' }}>
+                    <option value="sanctum">Sanctum & Deities</option>
+                    <option value="heritage">Reconstruction & Heritage</option>
+                    <option value="service">Anna Daana Service</option>
+                    <option value="literature">Sacred Literature</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Title / Caption *</label>
+                  <input type="text" required placeholder="e.g. Sanctum Garudastambha Deepotsavam" className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} style={{ width: '100%' }} />
+                </div>
+
+                {form.type === 'photo' ? (
+                  <div>
+                    <label className="form-label">Upload Image or Enter URL *</label>
+                    <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                      <input type="file" ref={fileInputRef} accept="image/*" style={{ display: 'none' }} onChange={e => handleFileUpload(e.target.files[0])} />
+                      <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="btn-secondary" style={{ flex: 1, padding: '10px', fontSize: '0.85rem', justifyContent: 'center' }}>
+                        {uploading ? '⏳ Uploading...' : '📁 Select Photo from Device'}
+                      </button>
+                    </div>
+                    <input type="text" required placeholder="Or paste image URL (e.g. /assets/...)" className="form-input" value={form.url} onChange={e => setForm(p => ({ ...p, url: e.target.value }))} style={{ width: '100%' }} />
+                    {form.url && (
+                      <div style={{ marginTop: '0.75rem', height: '120px', borderRadius: '8px', overflow: 'hidden', background: '#000' }}>
+                        <img src={form.url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className="form-label">Video URL (YouTube / MP4) *</label>
+                    <input type="url" required placeholder="https://www.youtube.com/watch?v=..." className="form-input" value={form.url} onChange={e => setForm(p => ({ ...p, url: e.target.value }))} style={{ width: '100%', marginBottom: '0.75rem' }} />
+                    <label className="form-label">Video Thumbnail Image (Optional)</label>
+                    <input type="text" placeholder="Optional thumbnail image URL" className="form-input" value={form.thumb} onChange={e => setForm(p => ({ ...p, thumb: e.target.value }))} style={{ width: '100%' }} />
+                  </div>
+                )}
+
+                <div>
+                  <label className="form-label">Description (Optional)</label>
+                  <textarea rows={3} placeholder="Add context or notes..." className="form-input" value={form.desc} onChange={e => setForm(p => ({ ...p, desc: e.target.value }))} style={{ width: '100%', resize: 'vertical' }} />
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                  <button type="button" onClick={() => setShowAddModal(false)} className="btn-secondary" style={{ flex: 1, padding: '12px', justifyContent: 'center' }}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary" style={{ flex: 1, padding: '12px', justifyContent: 'center' }}>
+                    {editingItem ? '💾 Save Changes' : '➕ Add to Media'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal for Gallery Item */}
+      <AnimatePresence>
+        {itemToDelete && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 20000, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)', padding: '1.5rem' }}
+            onClick={() => setItemToDelete(null)}>
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: 'var(--dark-navy, #0f172a)', border: '1px solid rgba(239, 68, 68, 0.5)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '2rem', textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🗑️</div>
+              <h3 style={{ color: '#ef4444', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)' }}>Delete & Remove Media?</h3>
+              <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                Are you sure you want to permanently delete &quot;<strong>{itemToDelete.title}</strong>&quot; from the website gallery?
+              </p>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button type="button" onClick={() => setItemToDelete(null)} className="btn-secondary" style={{ flex: 1, padding: '10px', justifyContent: 'center' }}>
+                  Cancel
+                </button>
+                <button type="button" onClick={handleDeleteGalleryItem} className="btn-primary" style={{ flex: 1, padding: '10px', justifyContent: 'center', background: '#dc2626', borderColor: '#ef4444' }}>
+                  Yes, Remove
+                </button>
               </div>
             </motion.div>
-          ))}
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal for Storage File */}
+      <AnimatePresence>
+        {fileToDelete && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ position: 'fixed', inset: 0, zIndex: 20000, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)', padding: '1.5rem' }}
+            onClick={() => setFileToDelete(null)}>
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: 'var(--dark-navy, #0f172a)', border: '1px solid rgba(239, 68, 68, 0.5)', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '2rem', textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.8)' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>🗑️</div>
+              <h3 style={{ color: '#ef4444', marginBottom: '0.75rem', fontFamily: 'var(--font-serif)' }}>Delete File from Storage?</h3>
+              <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                Are you sure you want to permanently delete &quot;<strong>{fileToDelete.name}</strong>&quot;?
+              </p>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button type="button" onClick={() => setFileToDelete(null)} className="btn-secondary" style={{ flex: 1, padding: '10px', justifyContent: 'center' }}>
+                  Cancel
+                </button>
+                <button type="button" onClick={handleDeleteStorageFile} className="btn-primary" style={{ flex: 1, padding: '10px', justifyContent: 'center', background: '#dc2626', borderColor: '#ef4444' }}>
+                  Yes, Delete File
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Lightbox Preview */}
       <AnimatePresence>

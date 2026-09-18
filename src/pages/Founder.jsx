@@ -197,14 +197,14 @@ const milestones = [
     desc: 'Sri Pancharatnam Subbaraamappa Gaaru established the sacred temple sanctuary with village elders in Inagaluru, Kadiri region.'
   },
   {
+    year: '1910 - 1950',
+    title: '40 Years Unbroken Anna Daana Satram',
+    desc: 'Managed and sustained the Kadiri Lakshmi Narasimha Swami Anna Daana Satram, feeding tens of thousands of visiting pilgrims without break.'
+  },
+  {
     year: '1940s',
     title: 'Literary Works, Sathakams & Harikathas',
     desc: 'Authored and published timeless classics including Bommalla Ramayanam, Eeswara Prasannam, Kalaabhaanu Vijayamu, Sathakams and Harikathas.'
-  },
-  {
-    year: '1970s - 2000s',
-    title: '30+ Years Unbroken Anna Daana Satram',
-    desc: 'Managed and sustained the Kadiri Lakshmi Narasimha Swami Anna Daana Satram, feeding tens of thousands of visiting pilgrims without break.'
   },
   {
     year: '2024',
