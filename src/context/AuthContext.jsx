@@ -47,6 +47,14 @@ export function AuthProvider({ children }) {
     await updatePassword(auth.currentUser, newPassword)
   }
 
+  // Reload user from Firebase Auth
+  const reloadUser = async () => {
+    if (!auth.currentUser) return null
+    await auth.currentUser.reload()
+    setUser({ ...auth.currentUser })
+    return auth.currentUser
+  }
+
   // Update admin email with re-authentication
   const updateAdminEmail = async (currentPassword, newEmail) => {
     if (!auth.currentUser || !auth.currentUser.email) {
@@ -54,18 +62,22 @@ export function AuthProvider({ children }) {
     }
     const credential = EmailAuthProvider.credential(auth.currentUser.email, currentPassword)
     await reauthenticateWithCredential(auth.currentUser, credential)
+    
+    let result = { direct: false, verificationSent: false }
     try {
       await updateEmail(auth.currentUser, newEmail)
+      result.direct = true
     } catch (err) {
-      // In newer Firebase versions with email verification required
       if (typeof verifyBeforeUpdateEmail === 'function') {
         await verifyBeforeUpdateEmail(auth.currentUser, newEmail)
+        result.verificationSent = true
       } else {
         throw err
       }
     }
     await auth.currentUser.reload()
     setUser({ ...auth.currentUser })
+    return result
   }
 
   return (
@@ -75,6 +87,7 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
+        reloadUser,
         updateAdminProfile,
         updateAdminPassword,
         updateAdminEmail,

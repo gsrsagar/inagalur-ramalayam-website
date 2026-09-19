@@ -1710,7 +1710,8 @@ function SettingsTab({ showToast, setTab }) {
 
 /* ===== ADMIN ACCOUNT & CREDENTIALS TAB ===== */
 function AccountTab({ showToast }) {
-  const { user, updateAdminProfile, updateAdminPassword, updateAdminEmail } = useAuth()
+  const { user, reloadUser, updateAdminProfile, updateAdminPassword, updateAdminEmail } = useAuth()
+  const { settings, saveSettings } = useContent()
   const [activeSection, setActiveSection] = useState('all') // 'all' | 'email' | 'password' | 'username'
 
   // Username / Display Name state
@@ -1722,6 +1723,9 @@ function AccountTab({ showToast }) {
   const [emailCurrentPassword, setEmailCurrentPassword] = useState('')
   const [showEmailCurrentPassword, setShowEmailCurrentPassword] = useState(false)
   const [savingEmail, setSavingEmail] = useState(false)
+  const [emailVerificationPending, setEmailVerificationPending] = useState(null)
+  const [syncContactEmail, setSyncContactEmail] = useState(true)
+  const [refreshingUser, setRefreshingUser] = useState(false)
 
   // Password state
   const [currentPassword, setCurrentPassword] = useState('')
@@ -1755,22 +1759,62 @@ function AccountTab({ showToast }) {
       return
     }
     setSavingEmail(true)
+    setEmailVerificationPending(null)
     try {
-      await updateAdminEmail(emailCurrentPassword, newEmail.trim())
+      const res = await updateAdminEmail(emailCurrentPassword, newEmail.trim())
+      
+      // Optionally update public website contact email as well
+      if (syncContactEmail && saveSettings && settings) {
+        try {
+          await saveSettings({ ...settings, email: newEmail.trim() })
+        } catch (sErr) {
+          console.warn('Could not sync settings.email:', sErr)
+        }
+      }
+
       setEmailCurrentPassword('')
-      showToast('Admin Login Email ID updated successfully! Use it for your next login.')
+      if (res?.direct) {
+        showToast(`Admin Login Email updated immediately to ${newEmail.trim()}!`)
+      } else if (res?.verificationSent) {
+        setEmailVerificationPending(newEmail.trim())
+        showToast(`Verification link sent to ${newEmail.trim()}! Please click it to confirm.`, 'info')
+      } else {
+        showToast('Admin Email updated successfully!')
+      }
     } catch (err) {
       let msg = err.message || 'Failed to update email ID'
       if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-        msg = 'Incorrect current password. Please try again.'
+        msg = 'Incorrect current password. Please check and try again.'
       } else if (err.code === 'auth/email-already-in-use') {
         msg = 'This email address is already registered to another account.'
       } else if (err.code === 'auth/invalid-email') {
         msg = 'Please enter a valid email format (e.g. name@domain.com).'
+      } else if (err.code === 'auth/requires-recent-login') {
+        msg = 'Security check: Please log out and log back in, then retry changing email.'
       }
       showToast(msg, 'error')
     }
     setSavingEmail(false)
+  }
+
+  // Refresh current user auth status
+  const handleRefreshStatus = async () => {
+    setRefreshingUser(true)
+    try {
+      const reloaded = await reloadUser()
+      if (reloaded?.email) {
+        setNewEmail(reloaded.email)
+        if (emailVerificationPending && reloaded.email.toLowerCase() === emailVerificationPending.toLowerCase()) {
+          setEmailVerificationPending(null)
+          showToast(`Email verified and updated to ${reloaded.email}!`, 'success')
+        } else {
+          showToast(`Account refreshed. Active login email: ${reloaded.email}`)
+        }
+      }
+    } catch (err) {
+      showToast('Refresh error: ' + err.message, 'error')
+    }
+    setRefreshingUser(false)
   }
 
   // Update Password
@@ -1976,13 +2020,53 @@ function AccountTab({ showToast }) {
             <div style={{
               background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
               borderRadius: '8px', padding: '10px 14px', fontSize: '0.75rem', color: 'var(--text-light)',
-              display: 'flex', alignItems: 'center', gap: '8px'
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px'
             }}>
-              <span>📌</span>
-              <div>
-                Current Email: <strong style={{ color: '#60a5fa' }}>{user?.email}</strong>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>📌</span>
+                <div>
+                  Active Email: <strong style={{ color: '#60a5fa' }}>{user?.email}</strong>
+                </div>
               </div>
+              <button
+                type="button"
+                onClick={handleRefreshStatus}
+                disabled={refreshingUser}
+                className="btn-secondary"
+                style={{ padding: '3px 10px', fontSize: '0.7rem', cursor: 'pointer' }}
+                title="Check latest status from Firebase"
+              >
+                {refreshingUser ? 'Checking...' : '🔄 Refresh Status'}
+              </button>
             </div>
+
+            {/* Pending Verification Banner */}
+            {emailVerificationPending && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  background: 'rgba(212,175,55,0.12)', border: '1px solid var(--primary-gold)',
+                  borderRadius: '10px', padding: '12px 14px'
+                }}
+              >
+                <div style={{ color: 'var(--primary-gold)', fontWeight: 600, fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>📬</span> Verification Link Sent to: {emailVerificationPending}
+                </div>
+                <p style={{ fontSize: '0.73rem', color: 'var(--text-light)', marginTop: '4px', lineHeight: 1.5 }}>
+                  Firebase has dispatched a verification email. Please open your inbox at <strong>{emailVerificationPending}</strong>, click the verification link, and then press <strong>Refresh Status</strong>.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleRefreshStatus}
+                  disabled={refreshingUser}
+                  className="btn-primary"
+                  style={{ marginTop: '8px', padding: '6px 14px', fontSize: '0.75rem' }}
+                >
+                  {refreshingUser ? 'Checking...' : '🔄 I Clicked the Link — Refresh Email'}
+                </button>
+              </motion.div>
+            )}
 
             <form onSubmit={handleUpdateEmail} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
               <div className="form-group">
@@ -1998,7 +2082,7 @@ function AccountTab({ showToast }) {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Current Password (Required for Email Change Authorization)</label>
+                <label className="form-label">Current Password (Required for Security Authorization)</label>
                 <div style={{ position: 'relative' }}>
                   <input 
                     type={showEmailCurrentPassword ? 'text' : 'password'} 
@@ -2024,11 +2108,21 @@ function AccountTab({ showToast }) {
                 </div>
               </div>
 
+              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: 'var(--text-light)', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={syncContactEmail} 
+                  onChange={e => setSyncContactEmail(e.target.checked)} 
+                  style={{ accentColor: 'var(--primary-gold)' }}
+                />
+                Also update Temple Public Contact Email in Website Settings
+              </label>
+
               <div style={{
                 background: 'rgba(0,0,0,0.2)', borderRadius: '8px', padding: '10px 12px',
                 fontSize: '0.72rem', color: 'var(--text-muted)'
               }}>
-                🔒 After changing, use this new Email ID next time you log in from the footer.
+                🔒 Once updated, use this new Email ID when signing in via Admin Login in the footer.
               </div>
 
               <motion.button 
