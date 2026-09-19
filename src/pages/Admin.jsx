@@ -9,6 +9,7 @@ const tabs = [
   { id: 'pages', label: 'Pages', icon: '📄', desc: 'Edit page content' },
   { id: 'translations', label: 'Translations', icon: '🌐', desc: 'Multi-language keys' },
   { id: 'settings', label: 'Settings', icon: '⚙️', desc: 'Contact & Bank details' },
+  { id: 'account', label: 'Admin Account', icon: '🔐', desc: 'Email ID, Username & Password' },
   { id: 'events', label: 'Events', icon: '🎉', desc: 'Manage events' },
   { id: 'members', label: 'Members', icon: '👥', desc: 'Manage members' },
   { id: 'donations', label: 'Donations', icon: '💰', desc: 'View donations' },
@@ -207,7 +208,7 @@ export default function Admin() {
               <div>
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
                   style={{ color: 'var(--primary-gold)', fontFamily: 'var(--font-serif)', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.5px' }}>
-                  ✦ Admin Dashboard
+                  ✦ {user.displayName || 'Admin Dashboard'}
                 </motion.p>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.65rem', marginTop: '4px', opacity: 0.7 }}>{user.email}</p>
               </div>
@@ -314,7 +315,8 @@ export default function Admin() {
             {tab === 'dashboard' && <DashboardTab user={user} setTab={setTab} />}
             {tab === 'pages' && <PagesTab showToast={showToast} />}
             {tab === 'translations' && <TranslationsTab showToast={showToast} />}
-            {tab === 'settings' && <SettingsTab showToast={showToast} />}
+            {tab === 'settings' && <SettingsTab showToast={showToast} setTab={setTab} />}
+            {tab === 'account' && <AccountTab showToast={showToast} />}
             {tab === 'events' && <CrudTab title="Events" collection="events" fields={eventFields} showToast={showToast} />}
             {tab === 'members' && <CrudTab title="Members" collection="members" fields={memberFields} showToast={showToast} />}
             {tab === 'donations' && <CrudTab title="Donations" collection="donations" fields={donationFields} showToast={showToast} />}
@@ -471,7 +473,7 @@ function DashboardTab({ user, setTab }) {
       {/* Welcome Banner */}
       <motion.div variants={itemVariants} className="admin-welcome-banner animated-border-glow">
         <div className="welcome-info">
-          <h1>{getGreeting()}, {user?.email ? user.email.split('@')[0] : 'Admin'}</h1>
+          <h1>{getGreeting()}, {user?.displayName || (user?.email ? user.email.split('@')[0] : 'Admin')}</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>
             Temple operations dashboard is fully connected to the live website database.
           </p>
@@ -516,39 +518,31 @@ function DashboardTab({ user, setTab }) {
             <span>📈</span> Donation Collections Trend
           </h3>
           <div style={{ flex: 1, position: 'relative', minHeight: '220px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg viewBox="0 0 500 200" style={{ width: '100%', height: '220px' }}>
+            <svg viewBox="0 0 460 180" style={{ width: '100%', height: '100%', overflow: 'visible' }}>
               <defs>
-                <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="var(--primary-gold)" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="var(--primary-gold)" stopOpacity="0.0" />
+                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#D4AF37" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
               
-              {/* Grid Lines */}
-              <line x1="40" y1="160" x2="480" y2="160" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-              <line x1="40" y1="110" x2="480" y2="110" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 4" />
-              <line x1="40" y1="60" x2="480" y2="60" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="4 4" />
-              
-              {/* Area Fill */}
-              {points.length > 0 && (
-                <path d={fillD} fill="url(#chart-grad)" />
-              )}
-              
-              {/* Chart Line */}
-              {points.length > 0 && (
-                <path d={pathD} fill="none" stroke="var(--primary-gold)" strokeWidth="3.5" strokeLinecap="round" />
-              )}
-              
+              {/* Horizontal grid lines */}
+              <line x1="40" y1="40" x2="450" y2="40" stroke="rgba(255,255,255,0.05)" strokeDasharray="4 4" />
+              <line x1="40" y1="80" x2="450" y2="80" stroke="rgba(255,255,255,0.05)" strokeDasharray="4 4" />
+              <line x1="40" y1="120" x2="450" y2="120" stroke="rgba(255,255,255,0.05)" strokeDasharray="4 4" />
+              <line x1="40" y1="160" x2="450" y2="160" stroke="rgba(255,255,255,0.1)" />
+
+              {/* Area fill */}
+              <path d={fillD} fill="url(#chartGradient)" />
+
+              {/* Line */}
+              <path d={pathD} fill="none" stroke="#D4AF37" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+
               {/* Points */}
               {points.map((p, i) => (
                 <g key={i}>
-                  <circle cx={p.x} cy={p.y} r="5" fill="var(--bright-gold)" stroke="var(--dark-slate)" strokeWidth="1.5" />
-                  <text x={p.x} y={p.y - 12} textAnchor="middle" fill="var(--text-light)" fontSize="9" fontWeight="600">
-                    {donationValues[i] >= 1000 ? `₹${(donationValues[i]/1000).toFixed(0)}k` : `₹${donationValues[i]}`}
-                  </text>
-                  <text x={p.x} y="178" textAnchor="middle" fill="var(--text-muted)" fontSize="9">
-                    {donationMonths[i]}
-                  </text>
+                  <circle cx={p.x} cy={p.y} r="4" fill="#161b22" stroke="#D4AF37" strokeWidth="2" />
+                  <text x={p.x} y="175" fill="rgba(255,255,255,0.4)" fontSize="10" textAnchor="middle">{donationMonths[i]}</text>
                 </g>
               ))}
             </svg>
@@ -558,12 +552,12 @@ function DashboardTab({ user, setTab }) {
         {/* Recent Activities */}
         <motion.div variants={itemVariants} className="activity-feed-card">
           <h3 className="activity-feed-title">
-            <span>⚡</span> Recent Admin Activities
+            <span>⚡</span> Real-time Site Log
           </h3>
-          <div className="activity-list">
-            {recentActivities.map((act, i) => (
-              <div key={i} className="activity-item">
-                <div className="activity-badge" style={{ backgroundColor: act.badgeColor }} />
+          <div className="activity-feed-list">
+            {recentActivities.map((act, index) => (
+              <div key={index} className="activity-feed-item">
+                <div className="activity-indicator" style={{ background: act.badgeColor }} />
                 <div className="activity-details">
                   <div className="activity-text">{act.text}</div>
                   <div className="activity-time">{act.time}</div>
@@ -590,6 +584,9 @@ function DashboardTab({ user, setTab }) {
           </motion.button>
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setTab('pages')} className="btn-secondary" style={{ padding: '8px 18px', fontSize: '0.75rem' }}>
             📄 Edit Pages
+          </motion.button>
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setTab('account')} className="btn-secondary" style={{ padding: '8px 18px', fontSize: '0.75rem', borderColor: 'var(--primary-gold)', color: 'var(--primary-gold)' }}>
+            🔐 Username & Password
           </motion.button>
         </div>
       </motion.div>
@@ -1494,7 +1491,7 @@ function CrudTab({ title, collection, fields, showToast }) {
 }
 
 /* ===== SETTINGS TAB ===== */
-function SettingsTab({ showToast }) {
+function SettingsTab({ showToast, setTab }) {
   const { settings, saveSettings } = useContent()
   const { uploadImage } = useData()
   const [formData, setFormData] = useState({ ...settings })
@@ -1538,8 +1535,24 @@ function SettingsTab({ showToast }) {
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <motion.div variants={itemVariants}>
-        <h2 className="section-title" style={{ fontSize: '1.8rem', margin: 0 }}>Global Site Settings</h2>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>Configure temple contacts, social links, and donation details</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h2 className="section-title" style={{ fontSize: '1.8rem', margin: 0 }}>Global Site Settings</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>Configure temple contacts, social links, and donation details</p>
+          </div>
+          {setTab && (
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setTab('account')}
+              className="btn-secondary"
+              style={{ padding: '8px 16px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              🔐 Change Username & Password →
+            </motion.button>
+          )}
+        </div>
       </motion.div>
 
       <motion.form onSubmit={handleSubmit} variants={itemVariants} className="admin-panel" style={{ width: '100%', maxWidth: '850px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -1691,6 +1704,546 @@ function SettingsTab({ showToast }) {
           </motion.button>
         </div>
       </motion.form>
+    </motion.div>
+  )
+}
+
+/* ===== ADMIN ACCOUNT & CREDENTIALS TAB ===== */
+function AccountTab({ showToast }) {
+  const { user, updateAdminProfile, updateAdminPassword, updateAdminEmail } = useAuth()
+  const [activeSection, setActiveSection] = useState('all') // 'all' | 'email' | 'password' | 'username'
+
+  // Username / Display Name state
+  const [displayName, setDisplayName] = useState(user?.displayName || '')
+  const [savingProfile, setSavingProfile] = useState(false)
+
+  // Login Email state
+  const [newEmail, setNewEmail] = useState(user?.email || '')
+  const [emailCurrentPassword, setEmailCurrentPassword] = useState('')
+  const [showEmailCurrentPassword, setShowEmailCurrentPassword] = useState(false)
+  const [savingEmail, setSavingEmail] = useState(false)
+
+  // Password state
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [savingPassword, setSavingPassword] = useState(false)
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.displayName || '')
+      setNewEmail(user.email || '')
+    }
+  }, [user])
+
+  // Update Admin Login Email ID
+  const handleUpdateEmail = async (e) => {
+    e.preventDefault()
+    if (!newEmail.trim()) {
+      showToast('Please enter a valid email address', 'error')
+      return
+    }
+    if (newEmail.trim().toLowerCase() === (user?.email || '').toLowerCase()) {
+      showToast('New email ID must be different from current email ID', 'error')
+      return
+    }
+    if (!emailCurrentPassword) {
+      showToast('Please enter your current password to authorize email change', 'error')
+      return
+    }
+    setSavingEmail(true)
+    try {
+      await updateAdminEmail(emailCurrentPassword, newEmail.trim())
+      setEmailCurrentPassword('')
+      showToast('Admin Login Email ID updated successfully! Use it for your next login.')
+    } catch (err) {
+      let msg = err.message || 'Failed to update email ID'
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        msg = 'Incorrect current password. Please try again.'
+      } else if (err.code === 'auth/email-already-in-use') {
+        msg = 'This email address is already registered to another account.'
+      } else if (err.code === 'auth/invalid-email') {
+        msg = 'Please enter a valid email format (e.g. name@domain.com).'
+      }
+      showToast(msg, 'error')
+    }
+    setSavingEmail(false)
+  }
+
+  // Update Password
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault()
+    if (!currentPassword) {
+      showToast('Please enter your current password', 'error')
+      return
+    }
+    if (newPassword.length < 6) {
+      showToast('New password must be at least 6 characters long', 'error')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      showToast('New password and confirm password do not match', 'error')
+      return
+    }
+    if (currentPassword === newPassword) {
+      showToast('New password must be different from current password', 'error')
+      return
+    }
+    setSavingPassword(true)
+    try {
+      await updateAdminPassword(currentPassword, newPassword)
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+      showToast('Admin password changed successfully! Please use it on next login.')
+    } catch (err) {
+      let msg = err.message || 'Failed to change password'
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        msg = 'Incorrect current password. Please check and try again.'
+      } else if (err.code === 'auth/weak-password') {
+        msg = 'Password is too weak. Please use at least 6 characters.'
+      }
+      showToast(msg, 'error')
+    }
+    setSavingPassword(false)
+  }
+
+  // Update Display Name / Username
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault()
+    if (!displayName.trim()) {
+      showToast('Please enter an admin username / display name', 'error')
+      return
+    }
+    setSavingProfile(true)
+    try {
+      await updateAdminProfile(displayName.trim())
+      showToast('Admin Username updated successfully!')
+    } catch (err) {
+      showToast('Failed to update username: ' + (err.message || 'Error occurred'), 'error')
+    }
+    setSavingProfile(false)
+  }
+
+  return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: '1050px' }}>
+      
+      {/* Header */}
+      <motion.div variants={itemVariants}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <div style={{
+            width: '48px', height: '48px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.05))',
+            border: '1px solid var(--primary-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.5rem', color: 'var(--primary-gold)', boxShadow: '0 0 20px rgba(212,175,55,0.15)'
+          }}>
+            🔐
+          </div>
+          <div>
+            <h2 className="section-title" style={{ fontSize: '1.8rem', margin: 0 }}>Admin Account & Security</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '2px' }}>
+              Change your Admin Login Email ID, Password, and Display Username
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Account Overview Bar */}
+      <motion.div variants={itemVariants} className="admin-panel" style={{
+        padding: '1.25rem 1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '1rem',
+        background: 'linear-gradient(135deg, rgba(22,27,34,0.92), rgba(13,17,23,0.98))',
+        borderLeft: '4px solid var(--primary-gold)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{
+            width: '46px', height: '46px', borderRadius: '50%',
+            background: 'var(--gradient-gold)', color: 'var(--dark-slate)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 700, fontSize: '1.2rem', boxShadow: '0 4px 12px rgba(212,175,55,0.3)'
+          }}>
+            {(user?.displayName || user?.email || 'A').charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: 'var(--text-light)', fontWeight: 600, fontSize: '1.05rem' }}>
+                {user?.displayName || 'Administrator'}
+              </span>
+              <span style={{
+                background: 'rgba(212,175,55,0.15)', color: 'var(--primary-gold)',
+                border: '1px solid rgba(212,175,55,0.3)', padding: '2px 8px',
+                borderRadius: '12px', fontSize: '0.7rem', fontWeight: 600
+              }}>
+                Active Admin
+              </span>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '3px' }}>
+              Current Login Email: <strong style={{ color: 'var(--primary-gold)', letterSpacing: '0.3px' }}>{user?.email}</strong>
+            </p>
+          </div>
+        </div>
+        
+        {/* Filter Navigation Pills */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setActiveSection('all')}
+            style={{
+              padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', cursor: 'pointer', border: '1px solid',
+              background: activeSection === 'all' ? 'var(--primary-gold)' : 'rgba(255,255,255,0.05)',
+              color: activeSection === 'all' ? 'var(--dark-slate)' : 'var(--text-muted)',
+              borderColor: activeSection === 'all' ? 'var(--primary-gold)' : 'var(--glass-border)',
+              fontWeight: activeSection === 'all' ? 700 : 500, transition: 'all 0.2s'
+            }}
+          >
+            All Options
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSection('email')}
+            style={{
+              padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', cursor: 'pointer', border: '1px solid',
+              background: activeSection === 'email' ? 'var(--primary-gold)' : 'rgba(255,255,255,0.05)',
+              color: activeSection === 'email' ? 'var(--dark-slate)' : 'var(--text-muted)',
+              borderColor: activeSection === 'email' ? 'var(--primary-gold)' : 'var(--glass-border)',
+              fontWeight: activeSection === 'email' ? 700 : 500, transition: 'all 0.2s'
+            }}
+          >
+            📧 Change Email ID
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSection('password')}
+            style={{
+              padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', cursor: 'pointer', border: '1px solid',
+              background: activeSection === 'password' ? 'var(--primary-gold)' : 'rgba(255,255,255,0.05)',
+              color: activeSection === 'password' ? 'var(--dark-slate)' : 'var(--text-muted)',
+              borderColor: activeSection === 'password' ? 'var(--primary-gold)' : 'var(--glass-border)',
+              fontWeight: activeSection === 'password' ? 700 : 500, transition: 'all 0.2s'
+            }}
+          >
+            🔑 Change Password
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSection('username')}
+            style={{
+              padding: '6px 14px', borderRadius: '20px', fontSize: '0.75rem', cursor: 'pointer', border: '1px solid',
+              background: activeSection === 'username' ? 'var(--primary-gold)' : 'rgba(255,255,255,0.05)',
+              color: activeSection === 'username' ? 'var(--dark-slate)' : 'var(--text-muted)',
+              borderColor: activeSection === 'username' ? 'var(--primary-gold)' : 'var(--glass-border)',
+              fontWeight: activeSection === 'username' ? 700 : 500, transition: 'all 0.2s'
+            }}
+          >
+            👤 Username
+          </button>
+        </div>
+      </motion.div>
+
+      {/* Main Form Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.5rem' }}>
+        
+        {/* CARD 1: CHANGE LOGIN EMAIL ID */}
+        {(activeSection === 'all' || activeSection === 'email') && (
+          <motion.div variants={itemVariants} className="admin-panel" style={{
+            padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem',
+            borderTop: '3px solid #60a5fa'
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <h3 style={{
+                  color: '#60a5fa', fontFamily: 'var(--font-serif)', fontSize: '1.25rem',
+                  display: 'flex', alignItems: 'center', gap: '8px', margin: 0
+                }}>
+                  📧 Change Login Email ID
+                </h3>
+                <span style={{ fontSize: '0.7rem', color: '#60a5fa', background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.3)', padding: '2px 8px', borderRadius: '8px' }}>
+                  Login Identity
+                </span>
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '6px' }}>
+                Update the official Email ID used to sign into the Temple Admin Panel.
+              </p>
+            </div>
+
+            <div style={{
+              background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
+              borderRadius: '8px', padding: '10px 14px', fontSize: '0.75rem', color: 'var(--text-light)',
+              display: 'flex', alignItems: 'center', gap: '8px'
+            }}>
+              <span>📌</span>
+              <div>
+                Current Email: <strong style={{ color: '#60a5fa' }}>{user?.email}</strong>
+              </div>
+            </div>
+
+            <form onSubmit={handleUpdateEmail} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div className="form-group">
+                <label className="form-label">New Admin Email ID</label>
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  placeholder="e.g. newadmin@ramalayam.org" 
+                  value={newEmail} 
+                  onChange={e => setNewEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Current Password (Required for Email Change Authorization)</label>
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type={showEmailCurrentPassword ? 'text' : 'password'} 
+                    className="form-input" 
+                    placeholder="Enter your current password" 
+                    value={emailCurrentPassword} 
+                    onChange={e => setEmailCurrentPassword(e.target.value)}
+                    style={{ paddingRight: '42px' }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailCurrentPassword(!showEmailCurrentPassword)}
+                    style={{
+                      position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer',
+                      fontSize: '0.95rem', padding: '4px'
+                    }}
+                    title={showEmailCurrentPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showEmailCurrentPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
+              </div>
+
+              <div style={{
+                background: 'rgba(0,0,0,0.2)', borderRadius: '8px', padding: '10px 12px',
+                fontSize: '0.72rem', color: 'var(--text-muted)'
+              }}>
+                🔒 After changing, use this new Email ID next time you log in from the footer.
+              </div>
+
+              <motion.button 
+                type="submit" 
+                className="btn-primary" 
+                whileHover={{ scale: 1.02 }} 
+                whileTap={{ scale: 0.98 }}
+                disabled={savingEmail}
+                style={{
+                  padding: '12px 24px', justifyContent: 'center',
+                  background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                  borderColor: '#3b82f6', color: '#fff'
+                }}
+              >
+                {savingEmail ? 'Verifying & Updating Email...' : '✉️ Save New Email ID'}
+              </motion.button>
+            </form>
+          </motion.div>
+        )}
+
+        {/* CARD 2: CHANGE PASSWORD */}
+        {(activeSection === 'all' || activeSection === 'password') && (
+          <motion.div variants={itemVariants} className="admin-panel" style={{
+            padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem',
+            borderTop: '3px solid var(--primary-gold)'
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <h3 style={{
+                  color: 'var(--primary-gold)', fontFamily: 'var(--font-serif)', fontSize: '1.25rem',
+                  display: 'flex', alignItems: 'center', gap: '8px', margin: 0
+                }}>
+                  🔑 Change Admin Password
+                </h3>
+                <span style={{ fontSize: '0.7rem', color: 'var(--primary-gold)', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', padding: '2px 8px', borderRadius: '8px' }}>
+                  Security
+                </span>
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '6px' }}>
+                Set a strong, secure password for protecting the admin dashboard and operations.
+              </p>
+            </div>
+
+            <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div className="form-group">
+                <label className="form-label">Current Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type={showCurrentPassword ? 'text' : 'password'} 
+                    className="form-input" 
+                    placeholder="Enter existing password" 
+                    value={currentPassword} 
+                    onChange={e => setCurrentPassword(e.target.value)}
+                    style={{ paddingRight: '42px' }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    style={{
+                      position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer',
+                      fontSize: '0.95rem', padding: '4px'
+                    }}
+                    title={showCurrentPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showCurrentPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">New Password (minimum 6 characters)</label>
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type={showNewPassword ? 'text' : 'password'} 
+                    className="form-input" 
+                    placeholder="Enter new password" 
+                    value={newPassword} 
+                    onChange={e => setNewPassword(e.target.value)}
+                    style={{ paddingRight: '42px' }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    style={{
+                      position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer',
+                      fontSize: '0.95rem', padding: '4px'
+                    }}
+                    title={showNewPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showNewPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Confirm New Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type={showConfirmPassword ? 'text' : 'password'} 
+                    className="form-input" 
+                    placeholder="Re-enter new password" 
+                    value={confirmPassword} 
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    style={{
+                      paddingRight: '42px',
+                      borderColor: confirmPassword && confirmPassword !== newPassword ? '#ff5555' : undefined
+                    }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer',
+                      fontSize: '0.95rem', padding: '4px'
+                    }}
+                    title={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
+                {confirmPassword && confirmPassword !== newPassword && (
+                  <p style={{ color: '#ff5555', fontSize: '0.72rem', marginTop: '4px', margin: 0 }}>
+                    ⚠️ Passwords do not match
+                  </p>
+                )}
+              </div>
+
+              <div style={{
+                background: 'rgba(212,175,55,0.06)', border: '1px dashed rgba(212,175,55,0.25)',
+                borderRadius: '8px', padding: '10px 14px', fontSize: '0.72rem', color: 'var(--text-muted)'
+              }}>
+                💡 <strong>Password Tips:</strong> Use a combination of uppercase letters, numbers, and symbols for maximum security.
+              </div>
+
+              <motion.button 
+                type="submit" 
+                className="btn-primary" 
+                whileHover={{ scale: 1.02 }} 
+                whileTap={{ scale: 0.98 }}
+                disabled={savingPassword}
+                style={{ marginTop: '0.25rem', padding: '12px 24px', justifyContent: 'center' }}
+              >
+                {savingPassword ? 'Updating Password...' : '🔒 Save New Password'}
+              </motion.button>
+            </form>
+          </motion.div>
+        )}
+
+        {/* CARD 3: CHANGE USERNAME / DISPLAY NAME */}
+        {(activeSection === 'all' || activeSection === 'username') && (
+          <motion.div variants={itemVariants} className="admin-panel" style={{
+            padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem',
+            borderTop: '3px solid #a78bfa'
+          }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <h3 style={{
+                  color: '#a78bfa', fontFamily: 'var(--font-serif)', fontSize: '1.25rem',
+                  display: 'flex', alignItems: 'center', gap: '8px', margin: 0
+                }}>
+                  👤 Change Admin Username
+                </h3>
+                <span style={{ fontSize: '0.7rem', color: '#a78bfa', background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.3)', padding: '2px 8px', borderRadius: '8px' }}>
+                  Display Name
+                </span>
+              </div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '6px' }}>
+                Update the administrator name shown on the dashboard header, welcome greeting, and logs.
+              </p>
+            </div>
+
+            <form onSubmit={handleUpdateProfile} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+              <div className="form-group">
+                <label className="form-label">Admin Username / Display Name</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g. Sri Rama Temple Admin" 
+                  value={displayName} 
+                  onChange={e => setDisplayName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div style={{
+                background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.2)',
+                borderRadius: '8px', padding: '10px 14px', fontSize: '0.72rem', color: 'var(--text-muted)'
+              }}>
+                ✨ This updates the public and internal display name without changing your login credentials.
+              </div>
+
+              <motion.button 
+                type="submit" 
+                className="btn-secondary" 
+                whileHover={{ scale: 1.02 }} 
+                whileTap={{ scale: 0.98 }}
+                disabled={savingProfile}
+                style={{
+                  padding: '12px 24px', justifyContent: 'center',
+                  borderColor: '#a78bfa', color: '#c4b5fd'
+                }}
+              >
+                {savingProfile ? 'Updating Name...' : '✨ Save Username'}
+              </motion.button>
+            </form>
+          </motion.div>
+        )}
+
+      </div>
     </motion.div>
   )
 }
