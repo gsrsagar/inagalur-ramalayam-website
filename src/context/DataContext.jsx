@@ -7,13 +7,67 @@ const DataContext = createContext()
 
 const DEFAULT_GALLERY = [
   {
+    id: 'deity-emblem-main',
+    type: 'photo',
+    category: 'sanctum',
+    title: 'శ్రీ సీత రామ స్వామి దేవస్థానం ఇనగలూరు - దివ్య రాజముద్ర',
+    desc: 'Sacred Emblem of Sri Seetha Rama Swamy Devasthanam, Inagalore',
+    url: '/assets/temple_logo_emblem.jpg',
+    createdAt: 1699999999
+  },
+  {
+    id: 'deity-arch-1',
+    type: 'photo',
+    category: 'sanctum',
+    title: 'శ్రీ సీతాలక్ష్మణ హనుమత్సమేత శ్రీ కోదండ రామచంద్ర స్వామి దివ్య దర్శనం',
+    desc: 'Grand Celestial Alankaram of Lord Sri Rama, Mother Sita, Lakshmana, and Anjaneya Swamy',
+    url: '/assets/ramalayam_deity_1.jpg',
+    createdAt: 1700000000
+  },
+  {
+    id: 'deity-closeup',
+    type: 'photo',
+    category: 'sanctum',
+    title: 'శ్రీ రామచంద్ర స్వామి మూలవిరాట్ ముఖారవింద దివ్య దర్శనం',
+    desc: 'Sacred Close-up Darshan of Moolavirat Lord Sri Ramachandra Swamy with Tilakam and Floral Mala',
+    url: '/assets/ramalayam_deity_4.jpg',
+    createdAt: 1700000001
+  },
+  {
+    id: 'deity-deepam',
+    type: 'photo',
+    category: 'sanctum',
+    title: 'గర్భాలయ మూలమూర్తుల సమగ్ర పుష్పాలంకార దీపారాధన',
+    desc: 'Sanctum Sanctorum complete view with holy oil lamps and grand flower decorations',
+    url: '/assets/ramalayam_deity_2.jpg',
+    createdAt: 1700000002
+  },
+  {
+    id: 'deity-toranam',
+    type: 'photo',
+    category: 'sanctum',
+    title: 'దివ్య పుష్పాలంకార తోరణ వైభవం',
+    desc: 'Divine floral archway decoration during festival celebrations',
+    url: '/assets/ramalayam_deity_3.jpg',
+    createdAt: 1700000003
+  },
+  {
+    id: 'swami-portrait-main',
+    type: 'photo',
+    category: 'service',
+    title: 'శ్రీ సుబ్బరామప్ప గారు (గురుదేవులు & పరమ రామభక్తులు)',
+    desc: 'Revered Founder & Sage Sri Subbaraamappa Gaaru, living embodiment of Rama Bhakti & Annadaanam',
+    url: '/assets/swami_portrait.jpg',
+    createdAt: 1700000004
+  },
+  {
     id: 'rec-main',
     type: 'photo',
     category: 'sanctum',
     title: 'Grand Reconstruction & Garudastambha Sanctum',
     desc: 'Holy Krishnasila Sanctum, Sacred Deepastambha & Traditional Floral Alankaram',
     url: '/assets/temple_reconstruction.png',
-    createdAt: 1700000001
+    createdAt: 1700000005
   },
   {
     id: 'rec1',
@@ -22,7 +76,7 @@ const DEFAULT_GALLERY = [
     title: 'Temple Grand Re-construction & Puna Prathistha 1',
     desc: 'Ancient Granite Architecture & Consecration Rituals',
     url: '/assets/temple_reconstruction1.jpeg',
-    createdAt: 1700000002
+    createdAt: 1700000006
   },
   {
     id: 'rec2',
@@ -31,7 +85,7 @@ const DEFAULT_GALLERY = [
     title: 'Temple Grand Re-construction & Puna Prathistha 2',
     desc: 'Sanctum Elevation & Traditional Shilpa Shastra Stone Craftsmanship',
     url: '/assets/temple_reconstruction2.jpeg',
-    createdAt: 1700000003
+    createdAt: 1700000007
   },
   {
     id: 'm1',
@@ -40,7 +94,7 @@ const DEFAULT_GALLERY = [
     title: 'Sanctum Sree Sitha Raama Swamy',
     desc: 'Main Sanctum Divine Altar & Sacred Blackstone Deities',
     url: '/assets/temple_hero_deity.png',
-    createdAt: 1700000004
+    createdAt: 1700000008
   },
   {
     id: 'm4',

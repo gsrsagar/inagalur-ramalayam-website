@@ -2,10 +2,14 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useLightbox } from './Lightbox'
 
 const defaultItems = [
+  { id: 'm-emblem', type: 'photo', title: 'Sri Seetha Rama Swamy Devasthanam Inagalur - Divine Emblem', desc: 'Sacred Temple Emblem with Kalasham, Sri Rama, Sita, Lakshmana, Hanuman and Deepam', url: '/assets/temple_logo_emblem.jpg' },
+  { id: 'm-deity-1', type: 'photo', title: 'Sri Seetha Lakshmana Hanumath Sametha Ramachandra Swamy', desc: 'Main Sanctum Sacred Celestial Alankaram', url: '/assets/ramalayam_deity_1.jpg' },
+  { id: 'm-deity-4', type: 'photo', title: 'Lord Sri Ramachandra Swamy Moolavirat Darshan', desc: 'Divine Close-up Sanctum Darshanam', url: '/assets/ramalayam_deity_4.jpg' },
+  { id: 'm-deity-2', type: 'photo', title: 'Sanctum Sanctorum Complete Deeparadhana', desc: 'Sacred Moolavirat with Holy Deepams', url: '/assets/ramalayam_deity_2.jpg' },
+  { id: 'm-deity-3', type: 'photo', title: 'Grand Floral Toranam & Festival Alankaram', desc: 'Celestial Flower Decoration', url: '/assets/ramalayam_deity_3.jpg' },
+  { id: 'm-swami', type: 'photo', title: 'Founder Sri Subbaraamappa Gaaru (Gurudevulu)', desc: '30+ Years of Anna Daana & Devotional Tapas', url: '/assets/swami_portrait.jpg' },
   { id: 'rec1', type: 'photo', title: 'Temple Grand Re-construction & Puna Prathistha 1', desc: 'Ancient Granite Architecture & Consecration', url: '/assets/temple_reconstruction1.jpeg' },
   { id: 'rec2', type: 'photo', title: 'Temple Grand Re-construction & Puna Prathistha 2', desc: 'Sanctum Elevation & Traditional Craftsmanship', url: '/assets/temple_reconstruction2.jpeg' },
-  { id: 'm1', type: 'photo', title: 'Sanctum Sree Sitha Raama Swamy', desc: 'Main Sanctum Divine Altar & Deities', url: '/assets/temple_hero_deity.png' },
-  { id: 'm4', type: 'photo', title: 'Founder Sri Subbaraamappa Gaaru', desc: '30 Years of Anna Daana Service', url: '/assets/founder_portrait.png' },
   { id: 'm6', type: 'video', title: 'Sacred Ramayana Book (Audio & Chants)', desc: 'Sachitra Bommalla Raamaa Naama Ramayanam', url: 'https://www.youtube.com/watch?v=wVGH-9Znwq4&list=PL4-zN5NLKyzwvbvtFOQYp7UjC62whcu', thumb: '/assets/book_ramayanam.png' },
 ]
 
