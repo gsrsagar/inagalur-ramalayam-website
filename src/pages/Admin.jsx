@@ -165,11 +165,38 @@ export default function Admin() {
   }
 
   return (
-    <section style={{ minHeight: '100vh', paddingTop: '80px', display: 'flex', background: 'var(--dark-slate)', overflowX: 'hidden' }}>
+    <section style={{ minHeight: '100vh', paddingTop: isMobile ? '120px' : '80px', display: 'flex', background: 'var(--dark-slate)', overflowX: 'hidden' }}>
+      
+      {/* Mobile Top Sub-Header */}
+      {isMobile && (
+        <div className="admin-mobile-subheader">
+          <button 
+            type="button" 
+            onClick={() => setShowMobileDrawer(!showMobileDrawer)}
+            className="admin-mobile-toggle-btn"
+          >
+            <span style={{ fontSize: '1.1rem' }}>{showMobileDrawer ? '✕' : '☰'}</span>
+            <span>Menu</span>
+          </button>
+          <div className="admin-mobile-active-title">
+            <span>{tabs.find(t => t.id === tab)?.icon}</span>
+            <span>{tabs.find(t => t.id === tab)?.label}</span>
+          </div>
+          <button 
+            type="button" 
+            onClick={logout}
+            className="admin-mobile-logout-icon"
+            title="Logout"
+          >
+            🚪
+          </button>
+        </div>
+      )}
+
       {isMobile && showMobileDrawer && (
         <div 
           onClick={() => setShowMobileDrawer(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+          style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
         />
       )}
 
@@ -181,7 +208,7 @@ export default function Admin() {
           width: isMobile ? '280px' : `${activeWidth}px`, flexShrink: 0, padding: '1rem 0',
           borderRight: '1px solid var(--glass-border)',
           background: isMobile ? 'rgba(13,17,23,0.98)' : 'rgba(22,27,34,0.75)', backdropFilter: 'blur(24px)',
-          position: 'fixed', top: '72px', left: 0, bottom: 0, zIndex: 100,
+          position: 'fixed', top: isMobile ? '118px' : '72px', left: 0, bottom: 0, zIndex: 100,
           overflowY: 'auto', overflowX: 'hidden', display: 'flex', flexDirection: 'column',
           transition: isResizing ? 'none' : 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           transform: isMobile ? (showMobileDrawer ? 'translateX(0)' : 'translateX(-100%)') : 'none'
@@ -212,18 +239,20 @@ export default function Admin() {
                 </motion.p>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.65rem', marginTop: '4px', opacity: 0.7 }}>{user.email}</p>
               </div>
-              <button
-                onClick={() => setIsCollapsed(true)}
-                style={{
-                  background: 'none', border: 'none', color: 'var(--text-muted)',
-                  cursor: 'pointer', fontSize: '0.8rem', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s'
-                }}
-                onMouseEnter={(e) => e.target.style.color = 'var(--primary-gold)'}
-                onMouseLeave={(e) => e.target.style.color = 'var(--text-muted)'}
-                title="Collapse Sidebar"
-              >
-                ◀
-              </button>
+              {!isMobile && (
+                <button
+                  onClick={() => setIsCollapsed(true)}
+                  style={{
+                    background: 'none', border: 'none', color: 'var(--text-muted)',
+                    cursor: 'pointer', fontSize: '0.8rem', padding: '4px', display: 'flex', alignItems: 'center', transition: 'color 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.color = 'var(--primary-gold)'}
+                  onMouseLeave={(e) => e.target.style.color = 'var(--text-muted)'}
+                  title="Collapse Sidebar"
+                >
+                  ◀
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -299,7 +328,7 @@ export default function Admin() {
       <main style={{
         flex: 1,
         marginLeft: isMobile ? '0' : `${activeWidth}px`,
-        padding: isMobile ? '1rem' : '2rem',
+        padding: isMobile ? '0.75rem' : '2rem',
         maxWidth: '100%',
         width: isMobile ? '100%' : `calc(100% - ${activeWidth}px)`,
         transition: isResizing ? 'none' : 'margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -312,7 +341,7 @@ export default function Admin() {
             exit={{ opacity: 0, y: -24, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 100, damping: 18 }}
           >
-            {tab === 'dashboard' && <DashboardTab user={user} setTab={setTab} />}
+            {tab === 'dashboard' && <DashboardTab user={user} setTab={setTab} isMobile={isMobile} />}
             {tab === 'pages' && <PagesTab showToast={showToast} />}
             {tab === 'translations' && <TranslationsTab showToast={showToast} />}
             {tab === 'settings' && <SettingsTab showToast={showToast} setTab={setTab} />}
@@ -386,7 +415,7 @@ export default function Admin() {
 }
 
 /* ===== DASHBOARD ===== */
-function DashboardTab({ user, setTab }) {
+function DashboardTab({ user, setTab, isMobile }) {
   const { events, members, donations, activities } = useData()
   
   const getGreeting = () => {
@@ -468,7 +497,7 @@ function DashboardTab({ user, setTab }) {
   }
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       
       {/* Welcome Banner */}
       <motion.div variants={itemVariants} className="admin-welcome-banner animated-border-glow">
@@ -478,7 +507,7 @@ function DashboardTab({ user, setTab }) {
             Temple operations dashboard is fully connected to the live website database.
           </p>
         </div>
-        <div style={{ textAlign: 'right' }}>
+        <div className="welcome-date-info">
           <div style={{ color: 'var(--primary-gold)', fontWeight: 700, fontSize: '0.9rem', fontFamily: 'var(--font-serif)' }}>
             {getFormattedDate()}
           </div>
@@ -489,7 +518,7 @@ function DashboardTab({ user, setTab }) {
       </motion.div>
 
       {/* Metrics Grid */}
-      <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+      <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(220px, 1fr))', gap: isMobile ? '0.75rem' : '1.25rem' }}>
         {cards.map(c => (
           <motion.div 
             key={c.label} 

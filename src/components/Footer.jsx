@@ -19,33 +19,20 @@ export default function Footer() {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      style={{
-        background: 'var(--medium-slate)',
-        borderTop: '1px solid var(--glass-border)',
-        padding: '60px 20px 30px',
-        position: 'relative',
-        zIndex: 10
-      }}
     >
-      <div className="footer-container" style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: '1.2fr 0.8fr 1.2fr 1fr',
-        gap: '40px'
-      }}>
+      <div className="footer-container">
         
         {/* Column 1: Identity & Socials */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', color: 'var(--primary-gold)', margin: 0 }}>
+        <div className="footer-col">
+          <h3 className="footer-title">
             Sree Sitha Raama Swamy Devasthaanam
           </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: '1.6', margin: 0 }}>
+          <p className="footer-text">
             {t('footer_text')}
           </p>
           
           {/* Social Handles */}
-          <div style={{ display: 'flex', gap: '12px', marginTop: '0.5rem' }}>
+          <div className="footer-socials">
             {(settings.youtube || 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg') && (
               <motion.a 
                 href={settings.youtube || 'https://www.youtube.com/watch?v=OatkwowN61g&list=PLETIcg9ZhPhg'} 
@@ -82,67 +69,53 @@ export default function Footer() {
         </div>
 
         {/* Column 2: Navigation Links */}
-        <div>
-          <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--primary-gold)', marginBottom: '1.25rem' }}>
+        <div className="footer-col">
+          <h4 className="footer-heading">
             Quick Links
           </h4>
-          <ul style={{ listStyle: 'none', lineHeight: 2.2, padding: 0, margin: 0 }}>
-            <li><a href="/" style={{ fontSize: '0.85rem' }}>{t('nav_home')}</a></li>
-            <li><a href="/history" style={{ fontSize: '0.85rem' }}>{t('nav_history')}</a></li>
-            <li><a href="/founder" style={{ fontSize: '0.85rem' }}>{t('nav_founder')}</a></li>
-            <li><a href="/services" style={{ fontSize: '0.85rem' }}>{t('nav_services')}</a></li>
+          <ul className="footer-links">
+            <li><a href="/">{t('nav_home')}</a></li>
+            <li><a href="/history">{t('nav_history')}</a></li>
+            <li><a href="/founder">{t('nav_founder')}</a></li>
+            <li><a href="/services">{t('nav_services')}</a></li>
           </ul>
         </div>
 
         {/* Column 3: Contact & Map */}
-        <div>
-          <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--primary-gold)', marginBottom: '1.25rem' }}>
+        <div className="footer-col">
+          <h4 className="footer-heading">
             {t('footer_contact_heading')}
           </h4>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: '1.6', margin: '0 0 10px 0' }}>
+          <p className="footer-text" style={{ margin: '0 0 8px 0' }}>
             📍 Devasthaanam Road, Inagaluru,<br />
             Kadiri Mandal, Sri Sathya Sai District,<br />
             Andhra Pradesh, India.
           </p>
-          <p style={{ color: 'var(--text-light)', fontSize: '0.82rem', margin: '0 0 5px 0' }}>
+          <p style={{ color: 'var(--text-light)', fontSize: '0.82rem', margin: '0 0 4px 0' }}>
             📞 {settings.phone}
           </p>
-          <p style={{ color: 'var(--text-light)', fontSize: '0.82rem', margin: '0 0 15px 0' }}>
+          <p style={{ color: 'var(--text-light)', fontSize: '0.82rem', margin: '0 0 12px 0' }}>
             ✉️ {settings.email}
           </p>
 
           <div className="footer-map">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.123456789!2d81.123456!3d16.987654!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDU5JzE1LjYiTiA4McKwMDcnMjQuMCJF!5e0!3m2!1sen!2sin!4v1"
-              width="100%" height="110"
-              style={{ border: 0, borderRadius: 8, opacity: 0.8 }}
-              allowFullScreen loading="lazy" title="Temple Location"
+              loading="lazy" title="Temple Location"
             />
           </div>
         </div>
 
         {/* Column 4: UPI Scan Panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.75rem' }}>
-          <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '0.95rem', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--primary-gold)', marginBottom: '0.5rem', margin: 0 }}>
+        <div className="footer-col">
+          <h4 className="footer-heading">
             UPI Quickscan
           </h4>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', lineHeight: '1.4', margin: 0 }}>
+          <p className="footer-text" style={{ fontSize: '0.75rem' }}>
             Scan to donate directly to Anna Daana Seva
           </p>
           
-          <div style={{ 
-            width: '120px', 
-            height: '120px', 
-            border: '2px solid var(--border-gold)', 
-            borderRadius: '12px', 
-            background: 'white', 
-            padding: '6px',
-            boxShadow: '0 0 15px var(--shadow-gold)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden'
-          }}>
+          <div className="footer-qr-card">
             <img 
               src={settings.qrCodeUrl || '/assets/qr_code_placeholder.png'} 
               alt="UPI Donation QR" 
@@ -154,17 +127,7 @@ export default function Footer() {
       </div>
 
       {/* Footer Bottom Rights */}
-      <div className="footer-bottom" style={{ 
-        maxWidth: '1200px', 
-        margin: '40px auto 0', 
-        paddingTop: '20px', 
-        borderTop: '1px solid var(--glass-border)',
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        gap: '1rem', 
-        flexWrap: 'wrap'
-      }}>
+      <div className="footer-bottom">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: 0 }}>
             &copy; {new Date().getFullYear()} Sree Sitha Raama Swamy Devasthaanam. All rights reserved.
