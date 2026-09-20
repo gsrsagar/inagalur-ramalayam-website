@@ -73,20 +73,12 @@ export default function Footer() {
           <h4 className="footer-heading">
             Quick Links
           </h4>
-<<<<<<< HEAD
           <ul style={{ listStyle: 'none', lineHeight: 2.2, padding: 0, margin: 0 }}>
             <li><Link to="/" style={{ fontSize: '0.85rem' }}>{t('nav_home')}</Link></li>
             <li><Link to="/history" style={{ fontSize: '0.85rem' }}>{t('nav_history')}</Link></li>
             <li><Link to="/about" style={{ fontSize: '0.85rem' }}>{t('nav_about')}</Link></li>
             <li><Link to="/founder" style={{ fontSize: '0.85rem' }}>{t('nav_founder')}</Link></li>
             <li><Link to="/services" style={{ fontSize: '0.85rem' }}>{t('nav_services')}</Link></li>
-=======
-          <ul className="footer-links">
-            <li><a href="/">{t('nav_home')}</a></li>
-            <li><a href="/history">{t('nav_history')}</a></li>
-            <li><a href="/founder">{t('nav_founder')}</a></li>
-            <li><a href="/services">{t('nav_services')}</a></li>
->>>>>>> 8a3c502e504a9c13cc0f05a1836e3d24d90e60e9
           </ul>
         </div>
 
