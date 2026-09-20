@@ -286,14 +286,15 @@ export default function FloatingGallery() {
                       flexDirection: 'column',
                       borderRadius: '16px',
                       overflow: 'hidden',
-                      background: 'var(--card-bg, rgba(20, 24, 33, 0.7))',
+                      background: 'rgba(22, 27, 34, 0.85)',
                       border: '1px solid var(--glass-border)',
-                      position: 'relative'
+                      position: 'relative',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.35)'
                     }}
                     onClick={() => open(item)}
                   >
                     {/* Image / Video Thumbnail */}
-                    <div className="crud-card-img-wrapper" style={{ height: '220px', background: '#090d13', overflow: 'hidden', position: 'relative' }}>
+                    <div className="crud-card-img-wrapper" style={{ height: '230px', background: '#090d13', overflow: 'hidden', position: 'relative' }}>
                       <img
                         src={displayImg}
                         alt={item.title}
@@ -381,20 +382,20 @@ export default function FloatingGallery() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          background: 'rgba(0,0,0,0.35)',
                           pointerEvents: 'none'
                         }}>
                           <div style={{
                             width: '48px',
                             height: '48px',
                             borderRadius: '50%',
-                            background: 'rgba(212, 175, 55, 0.9)',
+                            background: 'rgba(212, 175, 55, 0.95)',
                             color: '#111',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             fontSize: '1.2rem',
-                            paddingLeft: '3px'
+                            paddingLeft: '3px',
+                            boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
                           }}>
                             ▶
                           </div>
@@ -411,13 +412,33 @@ export default function FloatingGallery() {
                         {item.desc || 'Devotional expression of Sri Seetha Ramachandra Swamy.'}
                       </p>
                       
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '0.6rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', borderTop: '1px solid var(--glass-border)', paddingTop: '0.75rem' }}>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
                           📂 {item.category || 'sanctum'}
                         </span>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--primary-gold)', fontWeight: 600 }}>
-                          Click to View ↗
-                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            open(item)
+                          }}
+                          style={{
+                            background: 'rgba(212, 175, 55, 0.15)',
+                            border: '1px solid rgba(212, 175, 55, 0.4)',
+                            color: 'var(--primary-gold)',
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            padding: '4px 12px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}
+                        >
+                          👁️ View ↗
+                        </button>
                       </div>
                     </div>
                   </motion.div>

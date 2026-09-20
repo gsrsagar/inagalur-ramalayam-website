@@ -68,21 +68,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Column 2: Navigation Links */}
-        <div className="footer-col">
-          <h4 className="footer-heading">
-            Quick Links
-          </h4>
-          <ul style={{ listStyle: 'none', lineHeight: 2.2, padding: 0, margin: 0 }}>
-            <li><Link to="/" style={{ fontSize: '0.85rem' }}>{t('nav_home')}</Link></li>
-            <li><Link to="/history" style={{ fontSize: '0.85rem' }}>{t('nav_history')}</Link></li>
-            <li><Link to="/about" style={{ fontSize: '0.85rem' }}>{t('nav_about')}</Link></li>
-            <li><Link to="/founder" style={{ fontSize: '0.85rem' }}>{t('nav_founder')}</Link></li>
-            <li><Link to="/services" style={{ fontSize: '0.85rem' }}>{t('nav_services')}</Link></li>
-          </ul>
-        </div>
-
-        {/* Column 3: Contact & Map */}
+        {/* Column 2: Contact & Map */}
         <div className="footer-col">
           <h4 className="footer-heading">
             {t('footer_contact_heading')}
@@ -107,7 +93,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Column 4: UPI Scan Panel */}
+        {/* Column 3: UPI Scan Panel */}
         <div className="footer-col">
           <h4 className="footer-heading">
             UPI Quickscan
