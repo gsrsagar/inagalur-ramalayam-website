@@ -79,7 +79,7 @@ export default function Navbar() {
             type="button"
             onClick={togglePlay}
             className={`nav-chant-btn ${playing ? 'playing' : ''}`}
-            title={playing ? 'Stop / Pause Sacred Chant (Sri Rama Jaya Rama Jaya Jaya Rama)' : 'Play Sacred Chant (Sri Rama Jaya Rama Jaya Jaya Rama)'}
+            title={playing ? 'Stop / Pause Sacred Chant' : 'Play Sacred Chant'}
             aria-label={playing ? 'Stop Sacred Chant' : 'Play Sacred Chant'}
           >
             <span className="nav-chant-om">🕉️</span>
@@ -107,11 +107,11 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Donate Online CTA */}
+          {/* Donate Online CTA (Desktop) */}
           <button 
             type="button"
             onClick={() => window.dispatchEvent(new Event('open-donate-modal'))}
-            className="btn-primary nav-donate-btn"
+            className="btn-primary nav-donate-btn desktop-only-btn"
             style={{ cursor: 'pointer', border: 'none' }}
           >
             <span>❤️</span>
@@ -139,6 +139,7 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
+            className="mobile-menu-drawer"
             style={{
               background: 'rgba(13, 17, 23, 0.98)',
               borderBottom: '1px solid var(--border-gold)',
@@ -147,25 +148,27 @@ export default function Navbar() {
               padding: '1.25rem 1.5rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '1rem',
+              gap: '1.25rem',
               boxShadow: '0 15px 30px rgba(0,0,0,0.7)'
             }}
           >
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {links.map((link) => (
                 <li key={link.to}>
                   <Link
                     to={link.to}
                     onClick={() => setMobileMenuOpen(false)}
                     style={{
-                      display: 'block',
+                      display: 'flex',
+                      alignItems: 'center',
                       color: location.pathname === link.to ? 'var(--primary-gold)' : 'var(--text-light)',
                       fontWeight: location.pathname === link.to ? 700 : 500,
-                      fontSize: '0.95rem',
+                      fontSize: '1rem',
                       textDecoration: 'none',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      background: location.pathname === link.to ? 'rgba(212, 175, 55, 0.12)' : 'transparent'
+                      padding: '10px 14px',
+                      borderRadius: '10px',
+                      background: location.pathname === link.to ? 'rgba(212, 175, 55, 0.12)' : 'transparent',
+                      border: location.pathname === link.to ? '1px solid rgba(212, 175, 55, 0.3)' : '1px solid transparent'
                     }}
                   >
                     {link.label}
@@ -173,6 +176,45 @@ export default function Navbar() {
                 </li>
               ))}
             </ul>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>🌐 Select Language</span>
+                <div className="lang-selector-mobile">
+                  {languages.map((l) => (
+                    <button
+                      key={l.code}
+                      className={`lang-btn${lang === l.code ? ' active' : ''}`}
+                      onClick={() => setLang(l.code)}
+                      style={{ padding: '4px 12px', fontSize: '0.8rem' }}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button 
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false)
+                  window.dispatchEvent(new Event('open-donate-modal'))
+                }}
+                className="btn-primary"
+                style={{
+                  width: '100%',
+                  justify: 'center',
+                  padding: '12px',
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 15px rgba(212, 175, 55, 0.3)'
+                }}
+              >
+                <span>❤️</span>
+                <span>{t('btn_donate')}</span>
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
