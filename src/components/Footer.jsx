@@ -1,7 +1,7 @@
 import { useLanguage } from '../context/LanguageContext'
 import { useAuth } from '../context/AuthContext'
 import { useContent } from '../context/ContentContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
@@ -87,10 +87,11 @@ export default function Footer() {
             Quick Links
           </h4>
           <ul style={{ listStyle: 'none', lineHeight: 2.2, padding: 0, margin: 0 }}>
-            <li><a href="/" style={{ fontSize: '0.85rem' }}>{t('nav_home')}</a></li>
-            <li><a href="/history" style={{ fontSize: '0.85rem' }}>{t('nav_history')}</a></li>
-            <li><a href="/founder" style={{ fontSize: '0.85rem' }}>{t('nav_founder')}</a></li>
-            <li><a href="/services" style={{ fontSize: '0.85rem' }}>{t('nav_services')}</a></li>
+            <li><Link to="/" style={{ fontSize: '0.85rem' }}>{t('nav_home')}</Link></li>
+            <li><Link to="/history" style={{ fontSize: '0.85rem' }}>{t('nav_history')}</Link></li>
+            <li><Link to="/about" style={{ fontSize: '0.85rem' }}>{t('nav_about')}</Link></li>
+            <li><Link to="/founder" style={{ fontSize: '0.85rem' }}>{t('nav_founder')}</Link></li>
+            <li><Link to="/services" style={{ fontSize: '0.85rem' }}>{t('nav_services')}</Link></li>
           </ul>
         </div>
 
