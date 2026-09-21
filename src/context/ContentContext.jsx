@@ -28,7 +28,7 @@ export function ContentProvider({ children }) {
     pan: 'ABKTS6306C',
     contactPerson: 'Sri Krishna Kumar Pancharathnam (President, Temple Trust)',
     address: 'Inagalore Village, Obula Devara Cheruvu Mandal, Sri Sathya Sai District, Andhra Pradesh - 515591',
-    qrCodeUrl: '/assets/temple_pan_card.png',
+    qrCodeUrl: '/assets/temple_upi_qr.png',
     panCardUrl: '/assets/temple_pan_card.png'
   })
   const [loading, setLoading] = useState(true)

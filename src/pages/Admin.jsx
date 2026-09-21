@@ -1682,39 +1682,96 @@ function SettingsTab({ showToast, setTab }) {
           </div>
         </div>
 
-        {/* QR Code Scanner Upload */}
-        <div>
-          <h3 style={{ color: 'var(--primary-gold)', fontFamily: 'var(--font-serif)', fontSize: '1.25rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
-            📱 UPI QR Scanner Image
+        {/* QR Code Scanner & PAN Card Uploads */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <h3 style={{ color: 'var(--primary-gold)', fontFamily: 'var(--font-serif)', fontSize: '1.25rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', margin: 0 }}>
+            📷 Official Documents & Payment Scanners
           </h3>
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ width: '120px', height: '120px', border: '1px solid var(--glass-border)', borderRadius: '12px', background: 'rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              <img 
-                src={formData.qrCodeUrl || '/assets/qr_code_placeholder.png'} 
-                alt="Donation QR Code" 
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minWidth: '240px' }}>
-              <label className="btn-secondary" style={{ cursor: 'pointer', padding: '10px 16px', fontSize: '0.8rem', alignSelf: 'flex-start' }}>
-                {uploadingQr ? 'Uploading QR...' : '📸 Upload New QR Image'}
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  style={{ display: 'none' }} 
-                  onChange={handleQrUpload} 
-                  disabled={uploadingQr}
+          
+          {/* UPI QR Code Uploader */}
+          <div style={{ background: 'rgba(0,0,0,0.1)', border: '1px solid var(--glass-border)', borderRadius: '12px', padding: '1.25rem' }}>
+            <h4 style={{ color: 'var(--primary-gold)', fontSize: '0.95rem', margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>📱</span> UPI Donation QR Code Image
+            </h4>
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ width: '120px', height: '120px', border: '1px solid var(--border-gold)', borderRadius: '12px', background: 'white', padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                <img 
+                  src={formData.qrCodeUrl || '/assets/temple_upi_qr.png'} 
+                  alt="Donation QR Code" 
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
                 />
-              </label>
-              <input 
-                type="text" 
-                className="form-input" 
-                placeholder="Or paste a direct image URL..." 
-                value={formData.qrCodeUrl || ''} 
-                onChange={e => handleChange('qrCodeUrl', e.target.value)} 
-                style={{ fontSize: '0.75rem', marginTop: '4px', padding: '8px 12px' }}
-              />
-              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>Supported formats: JPEG, PNG. Recommended square resolution.</p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minWidth: '240px' }}>
+                <label className="btn-secondary" style={{ cursor: 'pointer', padding: '10px 16px', fontSize: '0.8rem', alignSelf: 'flex-start' }}>
+                  {uploadingQr ? 'Uploading QR...' : '📸 Upload New UPI QR Image'}
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    style={{ display: 'none' }} 
+                    onChange={handleQrUpload} 
+                    disabled={uploadingQr}
+                  />
+                </label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="Or paste direct image URL (e.g. /assets/temple_upi_qr.png)" 
+                  value={formData.qrCodeUrl || ''} 
+                  onChange={e => handleChange('qrCodeUrl', e.target.value)} 
+                  style={{ fontSize: '0.75rem', padding: '8px 12px' }}
+                />
+                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>
+                  This image is displayed under <strong>UPI Quickscan</strong> in the website footer and donation popup.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Trust PAN Card Uploader */}
+          <div style={{ background: 'rgba(0,0,0,0.1)', border: '1px solid var(--glass-border)', borderRadius: '12px', padding: '1.25rem' }}>
+            <h4 style={{ color: '#60a5fa', fontSize: '0.95rem', margin: '0 0 0.75rem 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>📄</span> Trust PAN Card Image
+            </h4>
+            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ width: '120px', height: '120px', border: '1px solid #60a5fa', borderRadius: '12px', background: 'white', padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                <img 
+                  src={formData.panCardUrl || '/assets/temple_pan_card.png'} 
+                  alt="Trust PAN Card" 
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1, minWidth: '240px' }}>
+                <label className="btn-secondary" style={{ cursor: 'pointer', padding: '10px 16px', fontSize: '0.8rem', alignSelf: 'flex-start', borderColor: '#60a5fa', color: '#60a5fa' }}>
+                  📸 Upload Trust PAN Card Image
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    style={{ display: 'none' }} 
+                    onChange={async (e) => {
+                      const file = e.target.files[0]
+                      if (!file) return
+                      try {
+                        const url = await uploadImage(file, 'settings')
+                        setFormData(prev => ({ ...prev, panCardUrl: url }))
+                        showToast('PAN Card image uploaded!')
+                      } catch (err) {
+                        showToast('Upload failed: ' + err.message, 'error')
+                      }
+                    }} 
+                  />
+                </label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="Or paste direct image URL (e.g. /assets/temple_pan_card.png)" 
+                  value={formData.panCardUrl || ''} 
+                  onChange={e => handleChange('panCardUrl', e.target.value)} 
+                  style={{ fontSize: '0.75rem', padding: '8px 12px' }}
+                />
+                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>
+                  This image is used for official Tax Exemption / PAN card documentation.
+                </p>
+              </div>
             </div>
           </div>
         </div>

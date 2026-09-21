@@ -12,6 +12,10 @@ export default function Footer() {
   const navigate = useNavigate()
   const [showLogin, setShowLogin] = useState(false)
 
+  const upiQrUrl = (!settings.qrCodeUrl || settings.qrCodeUrl.includes('temple_pan_card') || settings.qrCodeUrl.includes('1785085869181_QR'))
+    ? '/assets/temple_upi_qr.png'
+    : settings.qrCodeUrl
+
   return (
     <motion.footer
       className="footer"
@@ -117,7 +121,7 @@ export default function Footer() {
           
           <div className="footer-qr-card">
             <img 
-              src={settings.qrCodeUrl || '/assets/qr_code_placeholder.png'} 
+              src={upiQrUrl} 
               alt="UPI Donation QR" 
               style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
             />
