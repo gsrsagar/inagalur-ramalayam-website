@@ -4,6 +4,7 @@ import { useContent } from '../context/ContentContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 export default function Footer() {
   const { t } = useLanguage()
@@ -11,6 +12,7 @@ export default function Footer() {
   const { settings } = useContent()
   const navigate = useNavigate()
   const [showLogin, setShowLogin] = useState(false)
+  const [showQrModal, setShowQrModal] = useState(false)
 
   const upiQrUrl = (!settings.qrCodeUrl || settings.qrCodeUrl.includes('temple_pan_card') || settings.qrCodeUrl.includes('1785085869181_QR'))
     ? '/assets/temple_upi_qr.png'
@@ -102,17 +104,43 @@ export default function Footer() {
           <h4 className="footer-heading">
             UPI Quickscan
           </h4>
-          <p className="footer-text" style={{ fontSize: '0.75rem' }}>
+          <p className="footer-text" style={{ fontSize: '0.75rem', marginBottom: '8px' }}>
             Scan to donate directly to Anna Daana Seva
           </p>
           
-          <div className="footer-qr-card">
+          <motion.div 
+            className="footer-qr-card"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowQrModal(true)}
+            style={{ cursor: 'pointer', position: 'relative' }}
+            title="Click to expand QR Code"
+          >
             <img 
               src={upiQrUrl} 
               alt="UPI Donation QR" 
               style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
             />
-          </div>
+            <div style={{
+              position: 'absolute', bottom: '4px', right: '4px',
+              background: 'rgba(0,0,0,0.75)', color: 'var(--primary-gold)',
+              fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px',
+              pointerEvents: 'none', fontWeight: 'bold'
+            }}>
+              🔍 Expand
+            </div>
+          </motion.div>
+          <button
+            type="button"
+            onClick={() => setShowQrModal(true)}
+            style={{
+              background: 'none', border: 'none', color: 'var(--primary-gold)',
+              fontSize: '0.75rem', cursor: 'pointer', marginTop: '6px',
+              textDecoration: 'underline', padding: 0
+            }}
+          >
+            🔍 Tap for Big QR Code
+          </button>
         </div>
 
       </div>
@@ -153,8 +181,131 @@ export default function Footer() {
       {showLogin && (
         <AdminLoginPopup onClose={() => setShowLogin(false)} navigate={navigate} />
       )}
+
+      {showQrModal && (
+        <QrZoomModal qrUrl={upiQrUrl} onClose={() => setShowQrModal(false)} />
+      )}
     </motion.footer>
   )
+}
+
+function QrZoomModal({ qrUrl, onClose }) {
+  const modalContent = (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        zIndex: 100000,
+        background: 'rgba(0, 0, 0, 0.88)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+        boxSizing: 'border-box'
+      }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="modal-window"
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.85, opacity: 0 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        onClick={e => e.stopPropagation()}
+        style={{
+          padding: '1.25rem 1.25rem 1rem',
+          maxWidth: '380px',
+          width: '100%',
+          maxHeight: 'calc(100vh - 32px)',
+          overflowY: 'auto',
+          textAlign: 'center',
+          position: 'relative',
+          background: 'var(--card-bg, #161224)',
+          border: '2px solid var(--border-gold)',
+          borderRadius: '16px',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.9), 0 0 30px rgba(255,215,0,0.3)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          boxSizing: 'border-box'
+        }}
+      >
+        <button
+          type="button"
+          className="modal-close-btn"
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '10px', right: '10px',
+            width: '32px', height: '32px', borderRadius: '50%',
+            background: 'rgba(255,255,255,0.12)', border: '1px solid var(--border-gold)',
+            color: '#fff', fontSize: '1rem', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 2
+          }}
+          title="Close Popup"
+        >
+          ✕
+        </button>
+
+        <h3 className="modal-title" style={{ fontSize: '1.15rem', color: 'var(--primary-gold)', marginBottom: '2px', paddingRight: '24px' }}>
+          UPI Donation QR Code
+        </h3>
+        <p style={{ color: 'var(--text-light)', fontSize: '0.78rem', marginBottom: '12px' }}>
+          Sri Seetha Ramachandra Swamy Temple Trust
+        </p>
+
+        <div style={{
+          background: '#ffffff',
+          padding: '10px',
+          borderRadius: '14px',
+          boxShadow: '0 0 20px rgba(255,215,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 12px auto',
+          maxWidth: '100%'
+        }}>
+          <img
+            src={qrUrl}
+            alt="Expanded UPI QR Code"
+            style={{
+              width: 'clamp(180px, 48vw, 230px)',
+              maxHeight: '38vh',
+              objectFit: 'contain',
+              display: 'block'
+            }}
+          />
+        </div>
+
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.76rem', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+          Open PhonePe, Google Pay, Paytm or any UPI app to scan and contribute.
+        </p>
+
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', width: '100%', flexWrap: 'wrap' }}>
+          <a
+            href={qrUrl}
+            download="Temple_UPI_QR.png"
+            className="btn-primary"
+            style={{ fontSize: '0.8rem', padding: '7px 14px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+          >
+            ⬇️ Download QR
+          </a>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onClose}
+            style={{ fontSize: '0.8rem', padding: '7px 16px', cursor: 'pointer' }}
+          >
+            Close
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )
+
+  return createPortal(modalContent, document.body)
 }
 
 function AdminLoginPopup({ onClose, navigate }) {
@@ -175,19 +326,20 @@ function AdminLoginPopup({ onClose, navigate }) {
     }
   }
 
-  return (
+  const popupContent = (
     <div
       style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)',
+        position: 'fixed', inset: 0, zIndex: 100000,
+        background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px', boxSizing: 'border-box'
       }}
       onClick={onClose}
     >
       <div
         className="modal-window"
         onClick={e => e.stopPropagation()}
-        style={{ padding: '2rem', maxWidth: '400px', width: '90%' }}
+        style={{ padding: '2rem', maxWidth: '400px', width: '90%', position: 'relative' }}
       >
         <button
           type="button"
@@ -215,4 +367,6 @@ function AdminLoginPopup({ onClose, navigate }) {
       </div>
     </div>
   )
+
+  return createPortal(popupContent, document.body)
 }
