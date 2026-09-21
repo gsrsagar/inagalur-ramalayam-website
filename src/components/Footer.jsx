@@ -1,7 +1,7 @@
 import { useLanguage } from '../context/LanguageContext'
 import { useAuth } from '../context/AuthContext'
 import { useContent } from '../context/ContentContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 
@@ -72,20 +72,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Column 2: Navigation Links */}
-        <div className="footer-col">
-          <h4 className="footer-heading">
-            Quick Links
-          </h4>
-          <ul className="footer-links">
-            <li><a href="/">{t('nav_home')}</a></li>
-            <li><a href="/history">{t('nav_history')}</a></li>
-            <li><a href="/founder">{t('nav_founder')}</a></li>
-            <li><a href="/services">{t('nav_services')}</a></li>
-          </ul>
-        </div>
-
-        {/* Column 3: Contact & Map */}
+        {/* Column 2: Contact & Map */}
         <div className="footer-col">
           <h4 className="footer-heading">
             {t('footer_contact_heading')}
@@ -110,7 +97,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Column 4: UPI Scan Panel */}
+        {/* Column 3: UPI Scan Panel */}
         <div className="footer-col">
           <h4 className="footer-heading">
             UPI Quickscan

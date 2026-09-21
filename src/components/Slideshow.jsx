@@ -56,29 +56,15 @@ export default function Slideshow({ items: propItems }) {
                   <video src={item.url} muted loop playsInline preload="auto" />
                 )
               ) : (
-                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: '#0a0e14' }}>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      backgroundImage: `url(${item.url})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      filter: 'blur(24px) brightness(0.35)',
-                      transform: 'scale(1.1)',
-                      zIndex: 0
-                    }}
-                  />
+                <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: '#0a0e14', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <img
                     src={item.url}
                     alt={item.title}
                     loading="lazy"
                     style={{
-                      position: 'relative',
-                      zIndex: 1,
                       width: '100%',
                       height: '100%',
-                      objectFit: item.fit || 'contain',
+                      objectFit: 'cover',
                       objectPosition: item.position || 'center',
                     }}
                   />
