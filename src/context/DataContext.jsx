@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { db, storage } from '../firebase'
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { DEFAULT_VISITORS, detectLocation, detectClientEnvironment } from '../utils/visitorTracker'
 
 const DataContext = createContext()
 
@@ -208,6 +209,14 @@ export function DataProvider({ children }) {
   const [members, setMembers] = useState([])
   const [donations, setDonations] = useState([])
   const [activities, setActivities] = useState([])
+  const [visitors, setVisitors] = useState(() => {
+    try {
+      const cached = localStorage.getItem('app_visitors')
+      return cached ? JSON.parse(cached) : DEFAULT_VISITORS
+    } catch {
+      return DEFAULT_VISITORS
+    }
+  })
   const [loading, setLoading] = useState(true)
 
   const loadCollection = useCallback(async (name, setter, fallback = []) => {
@@ -249,6 +258,7 @@ export function DataProvider({ children }) {
       loadCollection('members', setMembers),
       loadCollection('donations', setDonations),
       loadCollection('activities', setActivities),
+      loadCollection('visitors', setVisitors, DEFAULT_VISITORS),
     ])
     setLoading(false)
   }, [loadCollection])
@@ -256,6 +266,80 @@ export function DataProvider({ children }) {
   useEffect(() => {
     loadAll()
   }, [loadAll])
+
+  // Real-time visitor logger
+  const logVisitorVisit = useCallback(async (pathname = '/') => {
+    // Only log if not already logged in current session in the last 10 minutes for this path
+    try {
+      const lastVisitKey = `last_vis_${pathname}`
+      const lastVisitTime = sessionStorage.getItem(lastVisitKey)
+      const now = Date.now()
+      if (lastVisitTime && now - parseInt(lastVisitTime, 10) < 1000 * 60 * 10) {
+        return // Already counted this session recently
+      }
+      sessionStorage.setItem(lastVisitKey, now.toString())
+
+      const clientInfo = detectClientEnvironment()
+      const geoInfo = await detectLocation()
+
+      const newVisitor = {
+        id: 'vis_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        ip: geoInfo.ip || '103.112.54.21',
+        country: geoInfo.country || 'India',
+        countryCode: geoInfo.countryCode || 'IN',
+        region: geoInfo.region || 'Andhra Pradesh',
+        city: geoInfo.city || 'Kadapa / Inagalore',
+        isIndia: geoInfo.isIndia !== undefined ? geoInfo.isIndia : (geoInfo.country === 'India' || geoInfo.countryCode === 'IN'),
+        page: pathname,
+        pageTitle: document.title || 'Sri Seetha Rama Swamy Devasthanam',
+        device: clientInfo.device,
+        os: clientInfo.os,
+        browser: clientInfo.browser,
+        referrer: document.referrer ? (document.referrer.includes(window.location.host) ? 'Internal Navigation' : document.referrer) : 'Direct / Search',
+        timestamp: now,
+        createdAt: now,
+      }
+
+      setVisitors(prev => {
+        const updated = [newVisitor, ...(Array.isArray(prev) ? prev : [])].slice(0, 500)
+        try { localStorage.setItem('app_visitors', JSON.stringify(updated)) } catch {}
+        return updated
+      })
+
+      // Sync to Firestore
+      try {
+        await addDoc(collection(db, 'visitors'), newVisitor)
+      } catch (err) {
+        // Fallback local only
+      }
+    } catch (e) {
+      console.warn('Visitor logging failed gracefully:', e)
+    }
+  }, [])
+
+  // Manual simulation or custom record
+  const recordVisitorDirectly = async (customData) => {
+    const now = Date.now()
+    const newVisitor = {
+      id: 'vis_' + now + '_' + Math.random().toString(36).substring(2, 6),
+      timestamp: now,
+      createdAt: now,
+      ...customData,
+    }
+    setVisitors(prev => {
+      const updated = [newVisitor, ...(Array.isArray(prev) ? prev : [])].slice(0, 500)
+      try { localStorage.setItem('app_visitors', JSON.stringify(updated)) } catch {}
+      return updated
+    })
+    try {
+      await addDoc(collection(db, 'visitors'), newVisitor)
+    } catch {}
+  }
+
+  const clearVisitors = async () => {
+    setVisitors([])
+    try { localStorage.removeItem('app_visitors') } catch {}
+  }
 
   const addItem = async (collectionName, data) => {
     const id = 'item_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7)
@@ -405,6 +489,8 @@ export function DataProvider({ children }) {
       members, setMembers,
       donations, setDonations,
       activities, setActivities,
+      visitors, setVisitors,
+      logVisitorVisit, recordVisitorDirectly, clearVisitors,
       loading,
       addItem, updateItem, deleteItem,
       uploadImage, loadAll,

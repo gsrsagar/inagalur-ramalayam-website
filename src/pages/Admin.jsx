@@ -3,9 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useContent } from '../context/ContentContext'
 import { useData } from '../context/DataContext'
+import ViewersTab from '../components/ViewersTab'
+import { calculateVisitorStats } from '../utils/visitorTracker'
 
 const tabs = [
   { id: 'dashboard', label: 'Dashboard', icon: '📊', desc: 'Overview & stats' },
+  { id: 'viewers', label: 'Viewers & Traffic', icon: '🌐', desc: 'India & Global Viewers' },
   { id: 'pages', label: 'Pages', icon: '📄', desc: 'Edit page content' },
   { id: 'translations', label: 'Translations', icon: '🌐', desc: 'Multi-language keys' },
   { id: 'settings', label: 'Settings', icon: '⚙️', desc: 'Contact & Bank details' },
@@ -342,6 +345,7 @@ export default function Admin() {
             transition={{ type: 'spring', stiffness: 100, damping: 18 }}
           >
             {tab === 'dashboard' && <DashboardTab user={user} setTab={setTab} isMobile={isMobile} />}
+            {tab === 'viewers' && <ViewersTab showToast={showToast} isMobile={isMobile} />}
             {tab === 'pages' && <PagesTab showToast={showToast} />}
             {tab === 'translations' && <TranslationsTab showToast={showToast} />}
             {tab === 'settings' && <SettingsTab showToast={showToast} setTab={setTab} />}
@@ -416,7 +420,7 @@ export default function Admin() {
 
 /* ===== DASHBOARD ===== */
 function DashboardTab({ user, setTab, isMobile }) {
-  const { events, members, donations, activities } = useData()
+  const { events, members, donations, activities, visitors = [] } = useData()
   
   const getGreeting = () => {
     const hr = new Date().getHours()
@@ -438,11 +442,15 @@ function DashboardTab({ user, setTab, isMobile }) {
   const totalDonationAmount = donations.reduce((sum, d) => sum + (Number(d.amount) || 0), 0)
   const formattedTotalDonations = totalDonationAmount.toLocaleString('en-IN')
 
+  // Visitor analytics stats
+  const visitorStats = calculateVisitorStats(visitors)
+
   const cards = [
-    { label: 'Events', count: events.length, icon: '🎉', color: '#D4AF37', bg: 'rgba(212,175,55,0.06)', trend: `+${events.filter(e => new Date(e.date) >= new Date()).length} upcoming` },
-    { label: 'Members', count: members.length, icon: '👥', color: '#60a5fa', bg: 'rgba(96,165,250,0.06)', trend: 'Active Committee' },
-    { label: 'Donations', count: `₹${formattedTotalDonations}`, icon: '💰', color: '#4ade80', bg: 'rgba(74,222,128,0.06)', trend: `${donations.length} receipts` },
-    { label: 'Activities', count: activities.length, icon: '📅', color: '#f472b6', bg: 'rgba(244,114,182,0.06)', trend: 'Weekly Pujalu' },
+    { label: 'Viewers & Traffic', count: visitorStats.total.toLocaleString(), icon: '🌐', color: '#38bdf8', bg: 'rgba(56,189,248,0.06)', trend: `🇮🇳 ${visitorStats.indiaPct}% India • 🌍 ${visitorStats.otherPct}% Global`, onClick: () => setTab('viewers') },
+    { label: 'Events', count: events.length, icon: '🎉', color: '#D4AF37', bg: 'rgba(212,175,55,0.06)', trend: `+${events.filter(e => new Date(e.date) >= new Date()).length} upcoming`, onClick: () => setTab('events') },
+    { label: 'Members', count: members.length, icon: '👥', color: '#60a5fa', bg: 'rgba(96,165,250,0.06)', trend: 'Active Committee', onClick: () => setTab('members') },
+    { label: 'Donations', count: `₹${formattedTotalDonations}`, icon: '💰', color: '#4ade80', bg: 'rgba(74,222,128,0.06)', trend: `${donations.length} receipts`, onClick: () => setTab('donations') },
+    { label: 'Activities', count: activities.length, icon: '📅', color: '#f472b6', bg: 'rgba(244,114,182,0.06)', trend: 'Weekly Pujalu', onClick: () => setTab('activities') },
   ]
 
   // Programmatic SVG chart calculations for recent donations
@@ -518,13 +526,15 @@ function DashboardTab({ user, setTab, isMobile }) {
       </motion.div>
 
       {/* Metrics Grid */}
-      <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(220px, 1fr))', gap: isMobile ? '0.75rem' : '1.25rem' }}>
+      <motion.div variants={containerVariants} style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: isMobile ? '0.75rem' : '1.25rem' }}>
         {cards.map(c => (
           <motion.div 
             key={c.label} 
             variants={itemVariants}
             className="premium-stat-card"
-            style={{ '--card-accent': c.color, '--icon-bg': c.bg }}
+            style={{ '--card-accent': c.color, '--icon-bg': c.bg, cursor: c.onClick ? 'pointer' : 'default' }}
+            onClick={c.onClick}
+            whileHover={c.onClick ? { y: -4, transition: { duration: 0.2 } } : {}}
           >
             <div className="stat-card-header">
               <span className="stat-card-label">{c.label}</span>
@@ -598,10 +608,44 @@ function DashboardTab({ user, setTab, isMobile }) {
 
       </div>
 
+      {/* Viewers & Geographic Traffic Highlight Banner */}
+      <motion.div variants={itemVariants} className="activity-feed-card" style={{ padding: '1.25rem 1.5rem', background: 'linear-gradient(135deg, rgba(22, 27, 34, 0.95), rgba(30, 41, 59, 0.6))', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '1.3rem' }}>🌐</span>
+              <h4 style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontSize: '1.05rem', margin: 0 }}>
+                Website Viewers Overview (India & Global)
+              </h4>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '4px' }}>
+              <strong style={{ color: '#4ade80' }}>🇮🇳 India: {visitorStats.indiaCount} ({visitorStats.indiaPct}%)</strong> • <strong style={{ color: '#60a5fa' }}>🌍 Other Countries: {visitorStats.otherCount} ({visitorStats.otherPct}%)</strong> • Total {visitorStats.total} Viewers
+            </p>
+          </div>
+          <button
+            onClick={() => setTab('viewers')}
+            className="btn-primary"
+            style={{ padding: '8px 18px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #0284c7, #38bdf8)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            <span>View Viewers List</span>
+            <span>→</span>
+          </button>
+        </div>
+
+        {/* Mini progress bar */}
+        <div style={{ width: '100%', height: '8px', borderRadius: '4px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden', display: 'flex', marginTop: '12px' }}>
+          <div style={{ width: `${visitorStats.indiaPct}%`, height: '100%', background: '#4ade80' }} title={`India: ${visitorStats.indiaPct}%`} />
+          <div style={{ width: `${visitorStats.otherPct}%`, height: '100%', background: '#60a5fa' }} title={`Other Countries: ${visitorStats.otherPct}%`} />
+        </div>
+      </motion.div>
+
       {/* Quick Action Center */}
       <motion.div variants={itemVariants} className="activity-feed-card" style={{ padding: '1.25rem 1.5rem' }}>
         <h4 style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontSize: '0.95rem', marginBottom: '0.75rem' }}>⚡ Quick Operations</h4>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setTab('viewers')} className="btn-secondary" style={{ padding: '8px 18px', fontSize: '0.75rem', borderColor: '#38bdf8', color: '#38bdf8' }}>
+            🌐 Viewers & Traffic
+          </motion.button>
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setTab('events')} className="btn-primary" style={{ padding: '8px 18px', fontSize: '0.75rem' }}>
             📅 Schedule Event
           </motion.button>

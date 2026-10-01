@@ -308,9 +308,7 @@ export default function FloatingGallery() {
                           transition: 'transform 0.4s ease'
                         }}
                       />
-                      <div className="crud-card-badge" style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2 }}>
-                        {isVideo ? '🎥 Video' : '🖼️ Photo'}
-                      </div>
+
 
                       {/* Top Right Quick Action Buttons - Only for Admin */}
                       {user && (

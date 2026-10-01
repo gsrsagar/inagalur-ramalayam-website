@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AuthProvider } from './context/AuthContext'
 import { ContentProvider } from './context/ContentContext'
-import { DataProvider } from './context/DataContext'
+import { DataProvider, useData } from './context/DataContext'
 import { LanguageProvider } from './context/LanguageContext'
 import { AudioProvider } from './context/AudioContext'
 import Navbar from './components/Navbar'
@@ -38,10 +38,14 @@ function PageTransition({ children }) {
 
 function AppContent() {
   const location = useLocation()
+  const { logVisitorVisit } = useData()
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' })
-  }, [location.pathname])
+    if (logVisitorVisit) {
+      logVisitorVisit(location.pathname)
+    }
+  }, [location.pathname, logVisitorVisit])
 
   return (
     <LightboxProvider>
