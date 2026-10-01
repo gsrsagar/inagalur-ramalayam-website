@@ -14,6 +14,10 @@ export default function DonateModal() {
 
   const isAdminPage = location.pathname === '/admin'
 
+  const upiQrUrl = (!settings.qrCodeUrl || settings.qrCodeUrl.includes('temple_pan_card') || settings.qrCodeUrl.includes('1785085869181_QR'))
+    ? '/assets/temple_upi_qr.png'
+    : settings.qrCodeUrl
+
   useEffect(() => {
     const handleOpen = () => setOpen(true)
     window.addEventListener('open-donate-modal', handleOpen)
@@ -28,7 +32,7 @@ export default function DonateModal() {
   }
 
   const handleDownloadQR = async () => {
-    const url = settings.qrCodeUrl || '/assets/qr_code_placeholder.png'
+    const url = upiQrUrl
     if (url.startsWith('data:')) {
       const a = document.createElement('a')
       a.href = url
@@ -142,7 +146,7 @@ export default function DonateModal() {
                   title="Click to zoom / download"
                 >
                   <img 
-                    src={settings.qrCodeUrl || '/assets/qr_code_placeholder.png'} 
+                    src={upiQrUrl} 
                     alt="UPI Donation QR Code" 
                     style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                   />
