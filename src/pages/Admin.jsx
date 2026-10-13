@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useContent } from '../context/ContentContext'
 import { useData } from '../context/DataContext'
-import ViewersTab from '../components/ViewersTab'
+import AnalyticsTab from '../components/AnalyticsTab'
 import { calculateVisitorStats } from '../utils/visitorTracker'
 
 const tabs = [
   { id: 'dashboard', label: 'Dashboard', icon: '📊', desc: 'Overview & stats' },
-  { id: 'viewers', label: 'Viewers & Traffic', icon: '🌐', desc: 'India & Global Viewers' },
+  { id: 'analytics', label: 'Web Analytics', icon: '📈', desc: 'GA4, Trends & Viewers' },
   { id: 'pages', label: 'Pages', icon: '📄', desc: 'Edit page content' },
   { id: 'translations', label: 'Translations', icon: '🌐', desc: 'Multi-language keys' },
   { id: 'settings', label: 'Settings', icon: '⚙️', desc: 'Contact & Bank details' },
@@ -345,7 +345,7 @@ export default function Admin() {
             transition={{ type: 'spring', stiffness: 100, damping: 18 }}
           >
             {tab === 'dashboard' && <DashboardTab user={user} setTab={setTab} isMobile={isMobile} />}
-            {tab === 'viewers' && <ViewersTab showToast={showToast} isMobile={isMobile} />}
+            {(tab === 'analytics' || tab === 'viewers') && <AnalyticsTab showToast={showToast} isMobile={isMobile} />}
             {tab === 'pages' && <PagesTab showToast={showToast} />}
             {tab === 'translations' && <TranslationsTab showToast={showToast} />}
             {tab === 'settings' && <SettingsTab showToast={showToast} setTab={setTab} />}
@@ -446,7 +446,7 @@ function DashboardTab({ user, setTab, isMobile }) {
   const visitorStats = calculateVisitorStats(visitors)
 
   const cards = [
-    { label: 'Viewers & Traffic', count: visitorStats.total.toLocaleString(), icon: '🌐', color: '#38bdf8', bg: 'rgba(56,189,248,0.06)', trend: `🇮🇳 ${visitorStats.indiaPct}% India • 🌍 ${visitorStats.otherPct}% Global`, onClick: () => setTab('viewers') },
+    { label: 'Web Analytics', count: visitorStats.total.toLocaleString(), icon: '📈', color: '#38bdf8', bg: 'rgba(56,189,248,0.06)', trend: `🇮🇳 ${visitorStats.indiaPct}% India • 🌍 ${visitorStats.otherPct}% Global`, onClick: () => setTab('analytics') },
     { label: 'Events', count: events.length, icon: '🎉', color: '#D4AF37', bg: 'rgba(212,175,55,0.06)', trend: `+${events.filter(e => new Date(e.date) >= new Date()).length} upcoming`, onClick: () => setTab('events') },
     { label: 'Members', count: members.length, icon: '👥', color: '#60a5fa', bg: 'rgba(96,165,250,0.06)', trend: 'Active Committee', onClick: () => setTab('members') },
     { label: 'Donations', count: `₹${formattedTotalDonations}`, icon: '💰', color: '#4ade80', bg: 'rgba(74,222,128,0.06)', trend: `${donations.length} receipts`, onClick: () => setTab('donations') },
@@ -623,11 +623,11 @@ function DashboardTab({ user, setTab, isMobile }) {
             </p>
           </div>
           <button
-            onClick={() => setTab('viewers')}
+            onClick={() => setTab('analytics')}
             className="btn-primary"
             style={{ padding: '8px 18px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #0284c7, #38bdf8)', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
           >
-            <span>View Viewers List</span>
+            <span>Open Web Analytics</span>
             <span>→</span>
           </button>
         </div>
@@ -643,8 +643,8 @@ function DashboardTab({ user, setTab, isMobile }) {
       <motion.div variants={itemVariants} className="activity-feed-card" style={{ padding: '1.25rem 1.5rem' }}>
         <h4 style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-light)', fontSize: '0.95rem', marginBottom: '0.75rem' }}>⚡ Quick Operations</h4>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setTab('viewers')} className="btn-secondary" style={{ padding: '8px 18px', fontSize: '0.75rem', borderColor: '#38bdf8', color: '#38bdf8' }}>
-            🌐 Viewers & Traffic
+          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setTab('analytics')} className="btn-secondary" style={{ padding: '8px 18px', fontSize: '0.75rem', borderColor: '#38bdf8', color: '#38bdf8' }}>
+            📈 Web Analytics
           </motion.button>
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => setTab('events')} className="btn-primary" style={{ padding: '8px 18px', fontSize: '0.75rem' }}>
             📅 Schedule Event

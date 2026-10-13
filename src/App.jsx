@@ -22,6 +22,7 @@ import Admin from './pages/Admin'
 import ParticleBackground from './components/ParticleBackground'
 import { LightboxProvider } from './components/Lightbox'
 import DonateModal from './components/DonateModal'
+import { trackPageView } from './utils/analytics'
 
 function PageTransition({ children }) {
   return (
@@ -45,6 +46,7 @@ function AppContent() {
     if (logVisitorVisit) {
       logVisitorVisit(location.pathname)
     }
+    trackPageView(location.pathname, document.title)
   }, [location.pathname, logVisitorVisit])
 
   return (
